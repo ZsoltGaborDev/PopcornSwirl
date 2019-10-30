@@ -54,16 +54,19 @@ class MediaService {
                     let responseJSON = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                     let results = responseJSON["results"] as? [AnyObject] {
                         var list = [MovieBrief]()
-                        for i in 0 ..< results.count {
+                    for i in 0 ..< results.count {
                             guard let movie = results[i] as? [String: Any] else {
                                 continue
                             }
                             if let id = movie["trackId"] as? Int,
                                 let title = movie["trackName"] as? String,
-                                let artistName = movie["artistName"] as? String,
-                                let description = movie["longDescription"] as? String,
-                                let artworkUrl = movie["artworkUrl100"] as? String {
-                                let movie = MovieBrief(id: id, title: title, artistName: artistName, description: description, artworkUrl: artworkUrl)
+                                let trackViewUrl = movie["trackViewUrl"] as? String,
+                                let description = movie["shortDescription"] as? String,
+                                let previewUrl = movie["previewUrl"] as? String,
+                                let releaseDate = movie["releaseDate"] as? String,
+                                let primaryGenreName = movie["primaryGenreName"] as? String,
+                                let artworkUrl60 = movie["artworkUrl100"] as? String {
+                                let movie = MovieBrief(id: id, title: title, trackViewUrl: trackViewUrl, description: description, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
                                     list.append(movie)
                             }
                         }
@@ -95,11 +98,15 @@ class MediaService {
                         let movie = results[0] as? [String: Any],
                         let id = movie["trackId"] as? Int,
                         let title = movie["trackName"] as? String,
-                        let artistName = movie["artistName"] as? String,
-                        let description = movie["longDescription"] as? String,
-                        let artworkUrl = movie["artworkUrl100"] as? String,
-                        let sourceUrl = movie["trackViewUrl"] as? String {
-                        let media = Movie(id: id, title: title, artistName: artistName, description: description, artworkUrl: artworkUrl, sourceUrl: sourceUrl)
+                        let trackViewUrl = movie["trackViewUrl"] as? String,
+                        let description = movie["shortDescription"] as? String,
+                        let previewUrl = movie["previewUrl"] as? String,
+                        let sourceUrl = movie["trackViewUrl"] as? String,
+                        let releaseDate = movie["releaseDate"] as?
+                            String,
+                        let primaryGenreName = movie["primaryGenreName"] as? String,
+                        let artworkUrl60 = movie["artworkUrl100"] as? String {
+                        let media = Movie(id: id, title: title, trackViewUrl: trackViewUrl, description: description, previewUrl: previewUrl, sourceUrl: sourceUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
                             media.collection = movie["collectionName"] as? String
                             completion(true, media)
                         }
@@ -126,6 +133,19 @@ class MediaService {
             }
             else {
                 completion(false, nil)
+            }
+        }
+        task.resume()
+    }
+    
+    static func getVideo(videoUrl: URL, completion: @escaping (Bool) -> Void) {
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: videoUrl) { (data, response, error) in
+            if error == nil, let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                completion(true)
+            }
+            else {
+                completion(false)
             }
         }
         task.resume()

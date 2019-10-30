@@ -1,8 +1,8 @@
 //
-//  ViewController.swift
+//  WatchedVC.swift
 //  PopcornSwirl
 //
-//  Created by zsolt on 22/10/2019.
+//  Created by zsolt on 29/10/2019.
 //  Copyright © 2019 zsolt. All rights reserved.
 //
 
@@ -10,16 +10,15 @@ import UIKit
 import AVFoundation
 import AVKit
 
-class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate {
+class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
-    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    var tableViewDelegate: UITableView!
+    
     var dataSource: [MovieBrief] {
-        return DataManager.shared.mediaList
+        return DataManager.shared.watchedList
     }
     
     override func viewDidLoad() {
@@ -77,11 +76,12 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "latestMoviesCell", for: indexPath) as! LatestMoviesCell
-        cell.delegate = self
-        cell.delegate?.tableViewDelegate = tableView
         let movieBrief = dataSource[indexPath.row]
         cell.configureCell(movieBrief: movieBrief)
-        cell.removeBtn.isHidden = true
+        cell.addBookmarkBtn.isHidden = true
+        cell.movieView.isHidden = true
+        cell.selectWatchedBtn.isHidden = true
+        cell.plusIconBookmark.isHidden = true
         return cell
     }
     
@@ -107,5 +107,6 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         pausePlayeVideos()
     }
+
 }
 

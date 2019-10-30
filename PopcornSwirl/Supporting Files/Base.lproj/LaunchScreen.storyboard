@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,9 +12,57 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Goa-wb-FVQ">
+                                <rect key="frame" x="0.0" y="423" width="414" height="50"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fgc-PY-YaF">
+                                        <rect key="frame" x="16" y="0.0" width="200" height="50"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="POPCORN SWIRL" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hI8-Oy-Mrr">
+                                                <rect key="frame" x="5" y="5" width="190" height="40"/>
+                                                <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <fontDescription key="fontDescription" name="Chalkduster" family="Chalkduster" pointSize="19"/>
+                                                <color key="textColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="EGL-vz-Lx7"/>
+                                            <constraint firstAttribute="bottom" secondItem="hI8-Oy-Mrr" secondAttribute="bottom" constant="5" id="SoN-bH-zOd"/>
+                                            <constraint firstAttribute="trailing" secondItem="hI8-Oy-Mrr" secondAttribute="trailing" constant="5" id="Y4a-Ha-oGo"/>
+                                            <constraint firstAttribute="width" constant="200" id="jMj-sU-rr6"/>
+                                            <constraint firstItem="hI8-Oy-Mrr" firstAttribute="leading" secondItem="Fgc-PY-YaF" secondAttribute="leading" constant="5" id="jaH-Th-T7g"/>
+                                            <constraint firstItem="hI8-Oy-Mrr" firstAttribute="top" secondItem="Fgc-PY-YaF" secondAttribute="top" constant="5" id="syb-zY-I8J"/>
+                                        </constraints>
+                                    </view>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="... loading" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="47X-IE-LXl">
+                                        <rect key="frame" x="236" y="14.5" width="138" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="47X-IE-LXl" secondAttribute="trailing" constant="40" id="0KY-88-BRs"/>
+                                    <constraint firstItem="47X-IE-LXl" firstAttribute="centerY" secondItem="Goa-wb-FVQ" secondAttribute="centerY" id="ECs-fT-NUU"/>
+                                    <constraint firstItem="47X-IE-LXl" firstAttribute="leading" secondItem="Fgc-PY-YaF" secondAttribute="trailing" constant="20" id="J8e-gb-UVK"/>
+                                    <constraint firstItem="Fgc-PY-YaF" firstAttribute="leading" secondItem="Goa-wb-FVQ" secondAttribute="leading" constant="16" id="Zbd-I3-JpI"/>
+                                    <constraint firstAttribute="bottom" secondItem="Fgc-PY-YaF" secondAttribute="bottom" id="pYg-fW-uOh"/>
+                                    <constraint firstItem="Fgc-PY-YaF" firstAttribute="top" secondItem="Goa-wb-FVQ" secondAttribute="top" id="x6w-OM-1u2"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Goa-wb-FVQ" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="8vV-PT-CVF"/>
+                            <constraint firstItem="Goa-wb-FVQ" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Cat-gB-Njf"/>
+                            <constraint firstItem="Goa-wb-FVQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="o3M-Cr-vs7"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>

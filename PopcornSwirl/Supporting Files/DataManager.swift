@@ -18,9 +18,34 @@ class DataManager {
         var list = [MovieBrief]()
         
         for i in 0 ..< 10 {
-            let media = MovieBrief(id: 3563563, title: "fake title \(i)", artistName: "fake artist name", description: "fake description", artworkUrl: "fake URL")
+            let media = MovieBrief(id: 3563563, title: "fake title \(i)", trackViewUrl: "fake link", description: "fake description", previewUrl: "fake URL", releaseDate: "fake date", primaryGenreName: "", artworkUrl60: "")
             list.append(media)
         }
         return list
     }()
+    
+    lazy var bookmarkedList: [MovieBrief] = {
+        var list = [MovieBrief]()
+        
+        return list
+    }()
+    
+    lazy var watchedList: [MovieBrief] = {
+        var list = [MovieBrief]()
+        
+        return list
+    }()
+    
+    
+    func formatDate(date: String) -> String {
+        let input = date
+        var output = Date()
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy"
+        if let date = formatter.date(from: input) {
+            output = date
+        }
+        return formatter.string(from: output)
+    }
 }
