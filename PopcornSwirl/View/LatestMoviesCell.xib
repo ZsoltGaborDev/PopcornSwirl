@@ -65,9 +65,9 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="162-JP-jse">
-                                        <rect key="frame" x="250.5" y="104" width="24.5" height="22"/>
+                                        <rect key="frame" x="469" y="192" width="11" height="22"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <state key="normal" image="playpause" catalog="system">
+                                        <state key="normal" image="pause" catalog="system">
                                             <attributedString key="attributedTitle"/>
                                         </state>
                                         <connections>
@@ -77,14 +77,16 @@
                                 </subviews>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <constraints>
+                                    <constraint firstItem="V4P-3N-sER" firstAttribute="bottom" secondItem="162-JP-jse" secondAttribute="bottom" id="0wd-SD-fMZ"/>
                                     <constraint firstAttribute="bottom" secondItem="UWA-N3-Y74" secondAttribute="bottom" id="En5-kB-f5A"/>
-                                    <constraint firstItem="162-JP-jse" firstAttribute="centerY" secondItem="Ia2-ax-azI" secondAttribute="centerY" id="FxE-WM-073"/>
                                     <constraint firstAttribute="trailing" secondItem="V4P-3N-sER" secondAttribute="trailing" constant="16" id="GUQ-3t-nJK"/>
                                     <constraint firstItem="UWA-N3-Y74" firstAttribute="leading" secondItem="Ia2-ax-azI" secondAttribute="leading" id="NZ7-1V-WLe"/>
+                                    <constraint firstItem="162-JP-jse" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ia2-ax-azI" secondAttribute="leading" constant="20" id="a9u-1j-8NK"/>
                                     <constraint firstAttribute="bottom" secondItem="V4P-3N-sER" secondAttribute="bottom" constant="16" id="cj7-2S-xgf"/>
-                                    <constraint firstItem="162-JP-jse" firstAttribute="centerX" secondItem="Ia2-ax-azI" secondAttribute="centerX" id="fB3-P7-uZg"/>
                                     <constraint firstAttribute="trailing" secondItem="UWA-N3-Y74" secondAttribute="trailing" id="fW3-2u-3d1"/>
+                                    <constraint firstItem="V4P-3N-sER" firstAttribute="top" secondItem="162-JP-jse" secondAttribute="top" id="fWM-N6-bwL"/>
                                     <constraint firstItem="UWA-N3-Y74" firstAttribute="top" secondItem="Ia2-ax-azI" secondAttribute="top" id="ffn-5t-QpV"/>
+                                    <constraint firstItem="V4P-3N-sER" firstAttribute="leading" secondItem="162-JP-jse" secondAttribute="trailing" constant="10" id="yM7-Ds-dsH"/>
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="LWr-7d-pNi">
@@ -275,7 +277,7 @@
     </objects>
     <resources>
         <image name="bookmarkIcon" width="75" height="75"/>
-        <image name="playpause" catalog="system" width="64" height="40"/>
+        <image name="pause" catalog="system" width="44" height="64"/>
         <image name="plus" catalog="system" width="64" height="56"/>
         <image name="speaker.slash" catalog="system" width="64" height="62"/>
         <image name="star" catalog="system" width="64" height="58"/>

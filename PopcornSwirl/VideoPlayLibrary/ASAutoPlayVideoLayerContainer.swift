@@ -231,6 +231,18 @@ class ASVideoPlayerController: NSObject, NSCacheDelegate {
         }
     }
     
+    func manuallyPausePlayeVideosFor(tableView: UITableView, appEnteredFromBackground: Bool = false) {
+        let visisbleCells = tableView.visibleCells
+        for cellView in visisbleCells {
+            guard let containerCell = cellView as? ASAutoPlayVideoLayerContainer,
+                let videoCellURL = containerCell.videoURL else {
+                    continue
+            }
+            let height = containerCell.visibleVideoHeight()
+            pauseRemoveLayer(layer: containerCell.videoLayer, url: videoCellURL, layerHeight: height)
+        }
+    }
+    
     // Set observing urls false when objects are removed from cache
     func cache(_ cache: NSCache<AnyObject, AnyObject>, willEvictObject obj: Any) {
         if let videoObject = obj as? ASVideoContainer {

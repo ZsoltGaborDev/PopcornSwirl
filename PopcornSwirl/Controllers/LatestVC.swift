@@ -11,6 +11,7 @@ import AVFoundation
 import AVKit
 
 class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate {
+  
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -18,6 +19,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         return .lightContent
     }
     var tableViewDelegate: UITableView!
+    var indexPath: IndexPath!
     var dataSource: [MovieBrief] {
         return DataManager.shared.mediaList
     }
@@ -79,6 +81,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         let cell = tableView.dequeueReusableCell(withIdentifier: "latestMoviesCell", for: indexPath) as! LatestMoviesCell
         cell.delegate = self
         cell.delegate?.tableViewDelegate = tableView
+        cell.delegate?.indexPath = indexPath
         let movieBrief = dataSource[indexPath.row]
         cell.configureCell(movieBrief: movieBrief)
         cell.removeBtn.isHidden = true

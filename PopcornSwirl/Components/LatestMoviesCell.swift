@@ -13,6 +13,7 @@ import AVFoundation
 protocol LatestMoviesCellDelegate {
    func pausePlayeVideos()
     var tableViewDelegate: UITableView! { get set }
+    var indexPath: IndexPath! {get set}
 }
 
 class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
@@ -32,9 +33,11 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     @IBOutlet weak var playPauseBtn: UIButton!
     @IBOutlet weak var muteBtn: UIButton!
     
+    var timer: Timer!
     var playerController: ASVideoPlayerController?
     var videoLayer: AVPlayerLayer = AVPlayerLayer()
     var movieId = Int()
+    var videoPauseIsOn = false
     var delegate: LatestMoviesCellDelegate?
     var videoURL: String? {
         didSet {
@@ -141,16 +144,31 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     }
     
     @IBAction func onPlayPauseBtn(_ sender: Any) {
-        self.delegate?.pausePlayeVideos()
-        ASVideoPlayerController.sharedVideoPlayer.pausePlayeVideosFor(tableView: delegate!.tableViewDelegate, appEnteredFromBackground: true)
-    }
-    
-    @IBAction func onMuteBtn(_ sender: Any) {
-        if ASVideoPlayerController.sharedVideoPlayer.mute == true  {
-            ASVideoPlayerController.sharedVideoPlayer.mute = false
+        if videoPauseIsOn {
+            if let url = videoURL {
+                ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: url)
+                videoPauseIsOn = false
+                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+            } else {
+                print("videoUrl error")
+            }
         } else {
-            ASVideoPlayerController.sharedVideoPlayer.mute = true
+            ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: delegate!.tableViewDelegate)
+            videoPauseIsOn = true
+            playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
         }
     }
     
+    @IBAction func onMuteBtn(_ sender: Any) {
+        if ASVideoPlayerController.sharedVideoPlayer.mute {
+            ASVideoPlayerController.sharedVideoPlayer.mute = false
+            ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
+            muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
+        } else {
+            ASVideoPlayerController.sharedVideoPlayer.mute = true
+            ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
+
+            muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
+        }
+    }
 }
