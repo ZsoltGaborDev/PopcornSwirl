@@ -18,7 +18,7 @@ class DataManager {
         var list = [MovieBrief]()
         
         for i in 0 ..< 10 {
-            let media = MovieBrief(id: 3563563, title: "fake title \(i)", trackViewUrl: "fake link", description: "fake description", previewUrl: "fake URL", releaseDate: "fake date", primaryGenreName: "", artworkUrl60: "")
+            let media = MovieBrief(id: 3563563, title: "fake title \(i)", trackViewUrl: "fake link", description: "fake description", longDescription: "fake description", previewUrl: "fake URL", releaseDate: "fake date", primaryGenreName: "", artworkUrl60: "")
             list.append(media)
         }
         return list

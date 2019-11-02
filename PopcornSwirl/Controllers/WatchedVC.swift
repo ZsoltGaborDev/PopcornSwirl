@@ -10,17 +10,23 @@ import UIKit
 import AVFoundation
 import AVKit
 
-class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate {
     
     @IBOutlet weak var tableView: UITableView!
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
     
+    var tableViewDelegate: UITableView!
+    var indexPath: IndexPath!
     var dataSource: [MovieBrief] {
         return DataManager.shared.watchedList
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tableView.reloadData()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         print(DataManager.shared.bookmarkedList.count)
@@ -30,18 +36,11 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         selector: #selector(self.appEnteredFromBackground),
         name: UIApplication.willEnterForegroundNotification, object: nil)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        pausePlayeVideos()
-    }
-    
     func config() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UINib(nibName: "LatestMoviesCell", bundle: nil), forCellReuseIdentifier: "latestMoviesCell")
     }
-    
     func loadData() {
         MediaService.getMovieList(term: "movie") { (success, list) in
             if success, let list = list {
@@ -57,7 +56,6 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
-    
     func presentNoDataAlert(title: String?, message: String?) {
         let alertController = UIAlertController(title: title,
                                                 message: message,
@@ -69,36 +67,33 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         alertController.addAction(dismissAction)
         present(alertController, animated: true)
     }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "latestMoviesCell", for: indexPath) as! LatestMoviesCell
         let movieBrief = dataSource[indexPath.row]
+        cell.delegate = self
         cell.configureCell(movieBrief: movieBrief)
         cell.addBookmarkBtn.isHidden = true
         cell.movieView.isHidden = true
         cell.selectWatchedBtn.isHidden = true
         cell.plusIconBookmark.isHidden = true
+        cell.movieViewHeight.constant = 0
+        cell.checkIfWatched(id: movieBrief.id)
         return cell
     }
-    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let videoCell = cell as? ASAutoPlayVideoLayerContainer, videoCell.videoURL != nil {
             ASVideoPlayerController.sharedVideoPlayer.removeLayerFor(cell: videoCell)
         }
     }
-    
     @objc func appEnteredFromBackground() {
         ASVideoPlayerController.sharedVideoPlayer.pausePlayeVideosFor(tableView: tableView, appEnteredFromBackground: true)
     }
-
     func pausePlayeVideos(){
         ASVideoPlayerController.sharedVideoPlayer.pausePlayeVideosFor(tableView: tableView)
     }
-    
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             pausePlayeVideos()
@@ -107,6 +102,11 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         pausePlayeVideos()
     }
-
+    func removeFromWatched(_ cell: LatestMoviesCell) {
+        if let idx = DataManager.shared.watchedList.firstIndex(where: { $0.id == cell.movieId }) {
+            DataManager.shared.watchedList.remove(at: idx)
+        }
+        tableView.reloadData()
+    }
 }
 

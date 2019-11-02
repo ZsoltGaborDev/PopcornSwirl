@@ -64,9 +64,10 @@ class MediaService {
                                 let description = movie["shortDescription"] as? String,
                                 let previewUrl = movie["previewUrl"] as? String,
                                 let releaseDate = movie["releaseDate"] as? String,
+                                let longDescription = movie["longDescription"] as? String,
                                 let primaryGenreName = movie["primaryGenreName"] as? String,
                                 let artworkUrl60 = movie["artworkUrl100"] as? String {
-                                let movie = MovieBrief(id: id, title: title, trackViewUrl: trackViewUrl, description: description, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
+                                let movie = MovieBrief(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
                                     list.append(movie)
                             }
                         }
@@ -100,13 +101,14 @@ class MediaService {
                         let title = movie["trackName"] as? String,
                         let trackViewUrl = movie["trackViewUrl"] as? String,
                         let description = movie["shortDescription"] as? String,
+                        let longDescription = movie["longDescription"] as? String,
                         let previewUrl = movie["previewUrl"] as? String,
                         let sourceUrl = movie["trackViewUrl"] as? String,
                         let releaseDate = movie["releaseDate"] as?
                             String,
                         let primaryGenreName = movie["primaryGenreName"] as? String,
                         let artworkUrl60 = movie["artworkUrl100"] as? String {
-                        let media = Movie(id: id, title: title, trackViewUrl: trackViewUrl, description: description, previewUrl: previewUrl, sourceUrl: sourceUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
+                        let media = Movie(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, sourceUrl: sourceUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
                             media.collection = movie["collectionName"] as? String
                             completion(true, media)
                         }

@@ -11,9 +11,9 @@ import AVKit
 import AVFoundation
 
 protocol LatestMoviesCellDelegate {
-   func pausePlayeVideos()
     var tableViewDelegate: UITableView! { get set }
     var indexPath: IndexPath! {get set}
+    func removeFromWatched(_ cell: LatestMoviesCell)
 }
 
 class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
@@ -32,9 +32,9 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     @IBOutlet weak var moreBtn: UIButton!
     @IBOutlet weak var playPauseBtn: UIButton!
     @IBOutlet weak var muteBtn: UIButton!
+    @IBOutlet weak var movieViewHeight: NSLayoutConstraint!
     
-    var timer: Timer!
-    var playerController: ASVideoPlayerController?
+    
     var videoLayer: AVPlayerLayer = AVPlayerLayer()
     var movieId = Int()
     var videoPauseIsOn = false
@@ -60,12 +60,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         //activityIndicator.color = .white
         selectionStyle = .none
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
     
     func configureCell(movieBrief: MovieBrief) {
         movieTitleLabel.text = movieBrief.title
@@ -86,13 +80,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             })
         }
         movieId = movieBrief.id
-        
-        let bookmarkedMovie = DataManager.shared.bookmarkedList.filter({$0.id == self.movieId })
-        if bookmarkedMovie.first?.id == movieId {
-            addBookmarkBtn.isHidden = true
-        } else {
-            addBookmarkBtn.isHidden = false
-        }
     }
     
     override func prepareForReuse() {
@@ -110,6 +97,10 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             let superViewFrame = superview?.frame else {
              return 0
         }
+        if !superViewFrame.isNull {
+            playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+            videoPauseIsOn = false
+        }
         let visibleVideoFrame = videoFrame.intersection(superViewFrame)
         return visibleVideoFrame.size.height
     }
@@ -119,16 +110,20 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         let bookmarkedMovie = list.filter({$0.id == self.movieId })
         DataManager.shared.bookmarkedList.append(bookmarkedMovie.first!)
     }
-    
     @IBAction func onSelectWatchedBtn(_ sender: Any) {
-        let list = DataManager.shared.mediaList
-        let watchedMovie = list.filter({$0.id == self.movieId })
-        DataManager.shared.watchedList.append(watchedMovie.first!)
+        if checkIfWatched(id: movieId) {
+            return
+        } else {
+            let list = DataManager.shared.mediaList
+            let watchedMovie = list.filter({$0.id == self.movieId })
+            
+            DataManager.shared.watchedList.append(watchedMovie.first!)
+            selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        }
     }
-    
     @IBAction func onRemoveBtn(_ sender: Any) {
+        delegate?.removeFromWatched(self)
     }
-    
     @IBAction func onMoreBtn(_ sender: Any) {
         let list = DataManager.shared.mediaList
         let watchedMovie = list.filter({$0.id == self.movieId })
@@ -153,7 +148,7 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
                 print("videoUrl error")
             }
         } else {
-            ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: delegate!.tableViewDelegate)
+            ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: delegate!.tableViewDelegate!)
             videoPauseIsOn = true
             playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
         }
@@ -164,11 +159,49 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             ASVideoPlayerController.sharedVideoPlayer.mute = false
             ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
             muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
+            if !visibleVideoHeight().isZero {
+                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                videoPauseIsOn = false
+            }
         } else {
             ASVideoPlayerController.sharedVideoPlayer.mute = true
             ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
 
             muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
+            if !visibleVideoHeight().isZero {
+                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                videoPauseIsOn = false
+            }
         }
     }
+    @discardableResult
+    func checkIfBookmarked(id: Int) -> Bool {
+        let list = DataManager.shared.bookmarkedList
+        let bookmarkedMovie = list.filter({$0.id == id })
+        if let movie = bookmarkedMovie.first {
+            if movie.id == id {
+                return true
+            }
+            return false
+        }
+        return false
+    }
+    @discardableResult
+    func checkIfWatched(id: Int) -> Bool {
+        let list = DataManager.shared.watchedList
+               let watchedMovie = list.filter({$0.id == id })
+        if let movie = watchedMovie.first {
+            if movie.id == id {
+                selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                return true
+            } else {
+                selectWatchedBtn.setImage(UIImage(systemName: "star"), for: .normal)
+                return false
+            }
+        } else {
+            selectWatchedBtn.setImage(UIImage(systemName: "star"), for: .normal)
+            return false
+        }
+    }
+    
 }
