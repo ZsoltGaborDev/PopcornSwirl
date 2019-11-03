@@ -11,9 +11,11 @@ import AVFoundation
 import AVKit
 
 class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, BookmarkCellDelegate {
- 
+    
     @IBOutlet weak var tableView: UITableView!
     
+    var indexPath = IndexPath()
+    var bookmarkedTableViewDelegate: UITableView!
     var dataSource: [MovieBrief] {
            return DataManager.shared.bookmarkedList
     }
@@ -29,10 +31,6 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             super.viewDidLoad()
             print(DataManager.shared.bookmarkedList.count)
             config()
-            //loadData()
-            NotificationCenter.default.addObserver(self,
-            selector: #selector(self.appEnteredFromBackground),
-            name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     func config() {
@@ -45,40 +43,29 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         return dataSource.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        self.indexPath = indexPath
         let cell = tableView.dequeueReusableCell(withIdentifier: "bookmarkCell", for: indexPath) as! BookmarkCell
         cell.bookmarkCellDelegate = self
+        cell.bookmarkCellDelegate?.bookmarkedTableViewDelegate = tableView
         let movieBrief = dataSource[indexPath.row]
         cell.configureCell(movieBrief: movieBrief)
         cell.checkIfWatched(id: movieBrief.id)
         return cell
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let videoCell = cell as? ASAutoPlayVideoLayerContainer, videoCell.videoURL != nil {
-            ASVideoPlayerController.sharedVideoPlayer.removeLayerFor(cell: videoCell)
-        }
     }
-    @objc func appEnteredFromBackground() {
-        ASVideoPlayerController.sharedVideoPlayer.pausePlayeVideosFor(tableView: tableView, appEnteredFromBackground: true)
-    }
-    func pausePlayeVideos(){
-        ASVideoPlayerController.sharedVideoPlayer.pausePlayeVideosFor(tableView: tableView)
-    }
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate {
-            pausePlayeVideos()
-        }
-    }
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        pausePlayeVideos()
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: tableView)
-    }
+
     func removeFromBookmarked(_ cell: BookmarkCell) {
         if let idx = DataManager.shared.bookmarkedList.firstIndex(where: { $0.id == cell.movieId }) {
             DataManager.shared.bookmarkedList.remove(at: idx)
         }
         tableView.reloadData()
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        if DataManager.shared.bookmarkedList.count > 0 {
+            let cell = bookmarkedTableViewDelegate.cellForRow(at: indexPath) as! BookmarkCell
+            cell.newPlayer.pauseVideo()
+        }
     }
 }
 

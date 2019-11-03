@@ -35,7 +35,6 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //pausePlayeVideos()
     }
     
     func config() {
