@@ -34,7 +34,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     @IBOutlet weak var muteBtn: UIButton!
     @IBOutlet weak var movieViewHeight: NSLayoutConstraint!
     
-    
     var videoLayer: AVPlayerLayer = AVPlayerLayer()
     var movieId = Int()
     var videoPauseIsOn = false
@@ -60,7 +59,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         //activityIndicator.color = .white
         selectionStyle = .none
     }
-    
     func configureCell(movieBrief: MovieBrief) {
         movieTitleLabel.text = movieBrief.title
         movieDetailLabel.text = movieBrief.description
@@ -81,16 +79,13 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         }
         movieId = movieBrief.id
     }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
     }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         videoLayer.frame = shotImageView.frame
     }
-    
     func visibleVideoHeight() -> CGFloat {
         let videoFrameInParentSuperView: CGRect? = self.superview?.superview?.convert(shotImageView.frame, from: shotImageView)
         guard let videoFrame = videoFrameInParentSuperView,
@@ -104,11 +99,14 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         let visibleVideoFrame = videoFrame.intersection(superViewFrame)
         return visibleVideoFrame.size.height
     }
-    
     @IBAction func onAddBookmarkBtn(_ sender: Any) {
-        let list = DataManager.shared.mediaList
-        let bookmarkedMovie = list.filter({$0.id == self.movieId })
-        DataManager.shared.bookmarkedList.append(bookmarkedMovie.first!)
+        if checkIfBookmarked(id: movieId) {
+            return
+        } else {
+            let list = DataManager.shared.mediaList
+            let bookmarkedMovie = list.filter({$0.id == self.movieId })
+            DataManager.shared.bookmarkedList.append(bookmarkedMovie.first!)
+        }
     }
     @IBAction func onSelectWatchedBtn(_ sender: Any) {
         if checkIfWatched(id: movieId) {
@@ -137,7 +135,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             UIApplication.shared.openURL(url)
         }
     }
-    
     @IBAction func onPlayPauseBtn(_ sender: Any) {
         if videoPauseIsOn {
             if let url = videoURL {
@@ -153,7 +150,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
         }
     }
-    
     @IBAction func onMuteBtn(_ sender: Any) {
         if ASVideoPlayerController.sharedVideoPlayer.mute {
             ASVideoPlayerController.sharedVideoPlayer.mute = false
@@ -203,5 +199,4 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             return false
         }
     }
-    
 }

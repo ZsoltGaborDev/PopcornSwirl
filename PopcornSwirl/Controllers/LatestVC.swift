@@ -22,7 +22,6 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     var dataSource: [MovieBrief] {
         return DataManager.shared.mediaList
     }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         print(DataManager.shared.bookmarkedList.count)
@@ -32,11 +31,11 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         selector: #selector(self.appEnteredFromBackground),
         name: UIApplication.willEnterForegroundNotification, object: nil)
     }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        tableView.reloadData()
+        pausePlayeVideos()
     }
-    
     func config() {
         tableView.dataSource = self
         tableView.delegate = self

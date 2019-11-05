@@ -7,18 +7,18 @@
 //
 
 import UIKit
-import AVKit
 import AVFoundation
-import GPVideoPlayer
+import AVKit
 
 protocol BookmarkCellDelegate {
     func removeFromBookmarked(_ cell: BookmarkCell)
     var bookmarkedTableViewDelegate: UITableView! { get set }
 }
 
-class BookmarkCell: UITableViewCell {
-
-    @IBOutlet weak var movieView: UIView!
+class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
+    
+    @IBOutlet weak var movieView: PlayerView!
+    @IBOutlet weak var movieImageView: UIImageView!
     @IBOutlet weak var movieTitleLabel: UILabel!
     @IBOutlet weak var movieDetailLabel: UILabel!
     @IBOutlet weak var artworkUrl100: UIImageView!
@@ -28,45 +28,36 @@ class BookmarkCell: UITableViewCell {
     @IBOutlet weak var addToWatchedLabel: UILabel!
     @IBOutlet weak var removeBtn: UIButton!
     @IBOutlet weak var moreBtn: UIButton!
+    @IBOutlet weak var playPauseBtn: UIButton!
+    @IBOutlet weak var muteBtn: UIButton!
+    @IBOutlet weak var movieImageViewHeight: NSLayoutConstraint!
     
-    var newPlayer: GPVideoPlayer!
-    
-    var bookmarkCellDelegate: BookmarkCellDelegate?
     var videoLayer: AVPlayerLayer = AVPlayerLayer()
+    var bookmarkCellDelegate: BookmarkCellDelegate?
     var movieId = Int()
     var videoPauseIsOn = false
     var videoURL: String? {
         didSet {
             if let videoURL = videoURL {
                 ASVideoPlayerController.sharedVideoPlayer.setupVideoFor(url: videoURL)
+            
             }
             videoLayer.isHidden = videoURL == nil
         }
-    }
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-    // Configure the view for the selected state
-    }
+    }    
     override func awakeFromNib() {
         super.awakeFromNib()
+        movieImageView.layer.cornerRadius = 5
+        movieImageView.clipsToBounds = true
+        movieImageView.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        movieImageView.layer.borderWidth = 0.5
+        videoLayer.backgroundColor = UIColor.clear.cgColor
+        videoLayer.videoGravity = AVLayerVideoGravity.resize
+        movieImageView.layer.addSublayer(videoLayer)
         selectionStyle = .none
     }
-        
-    func configurePlayer() {
-        if let player = GPVideoPlayer.initialize(with: movieView.bounds) {
-            self.movieView.addSubview(player)
-            newPlayer = player
-        }
-    }
-    
     func configureCell(movieBrief: MovieBrief) {
-        configurePlayer()
         self.videoURL = movieBrief.previewUrl
-        newPlayer.loadVideo(with: URL(string: videoURL!)!)
-        newPlayer.pauseVideo()
-        newPlayer.isToShowPlaybackControls = true
-        newPlayer.isMuted = true
         movieTitleLabel.text = movieBrief.title
         movieDetailLabel.text = movieBrief.longDescription
         primaryGenreName.text = movieBrief.primaryGenreName
@@ -85,21 +76,25 @@ class BookmarkCell: UITableViewCell {
         }
         movieId = movieBrief.id
     }
-        
     override func prepareForReuse() {
         super.prepareForReuse()
     }
-        
-    @IBAction func onSelectWatchedBtn(_ sender: Any) {
-        if checkIfWatched(id: movieId) {
-            return
-        } else {
-            let list = DataManager.shared.bookmarkedList
-            let watchedMovie = list.filter({$0.id == self.movieId })
-            DataManager.shared.watchedList.append(watchedMovie.first!)
-            selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
-            addToWatchedLabel.text = "WATCHED"
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        videoLayer.frame = movieImageView.frame
+    }
+    func visibleVideoHeight() -> CGFloat {
+        let videoFrameInParentSuperView: CGRect? = self.superview?.superview?.convert(movieImageView.frame, from: movieImageView)
+        guard let videoFrame = videoFrameInParentSuperView,
+            let superViewFrame = superview?.frame else {
+             return 0
         }
+        if !superViewFrame.isNull {
+            playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+            videoPauseIsOn = false
+        }
+        let visibleVideoFrame = videoFrame.intersection(superViewFrame)
+        return visibleVideoFrame.size.height
     }
     @discardableResult
     func checkIfWatched(id: Int) -> Bool {
@@ -121,11 +116,21 @@ class BookmarkCell: UITableViewCell {
             return false
         }
     }
-        
+    
+    @IBAction func onSelectWatchedBtn(_ sender: Any) {
+        if checkIfWatched(id: movieId) {
+            return
+        } else {
+            let list = DataManager.shared.bookmarkedList
+            let watchedMovie = list.filter({$0.id == self.movieId })
+            DataManager.shared.watchedList.append(watchedMovie.first!)
+            selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
+            addToWatchedLabel.text = "WATCHED"
+        }
+    }
     @IBAction func onRemoveBtn(_ sender: Any) {
         bookmarkCellDelegate?.removeFromBookmarked(self)
     }
-        
     @IBAction func onMoreBtn(_ sender: Any) {
         let list = DataManager.shared.bookmarkedList
         let bookmarkedMovie = list.filter({$0.id == self.movieId })
@@ -137,6 +142,41 @@ class BookmarkCell: UITableViewCell {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         } else {
             UIApplication.shared.openURL(url)
+        }
+    }
+    @IBAction func onPlayPauseBtn(_ sender: Any) {
+        if videoPauseIsOn {
+            if let url = videoURL {
+                ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: url)
+                videoPauseIsOn = false
+                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+            } else {
+                print("videoUrl error")
+            }
+        } else {
+            ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: bookmarkCellDelegate!.bookmarkedTableViewDelegate!)
+            videoPauseIsOn = true
+            playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
+        }
+    }
+    @IBAction func onMuteBtn(_ sender: Any) {
+        if ASVideoPlayerController.sharedVideoPlayer.mute {
+            ASVideoPlayerController.sharedVideoPlayer.mute = false
+            ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
+            muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
+            if !visibleVideoHeight().isZero {
+                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                videoPauseIsOn = false
+            }
+        } else {
+            ASVideoPlayerController.sharedVideoPlayer.mute = true
+            ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
+
+            muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
+            if !visibleVideoHeight().isZero {
+                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                videoPauseIsOn = false
+            }
         }
     }
 }

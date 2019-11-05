@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -22,6 +22,52 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gfg-q6-stY">
                                 <rect key="frame" x="0.0" y="0.0" width="491" height="292"/>
                                 <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nq3-1v-AMx">
+                                        <rect key="frame" x="0.0" y="0.0" width="491" height="210"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ItE-nN-tXt">
+                                                <rect key="frame" x="0.0" y="0.0" width="491" height="210"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="210" id="COP-ox-yOu"/>
+                                                </constraints>
+                                            </imageView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="0d2-gd-CBT">
+                                                <rect key="frame" x="437.5" y="178" width="43.5" height="22"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="paz-Ke-n0S">
+                                                        <rect key="frame" x="0.0" y="0.0" width="14.5" height="22"/>
+                                                        <color key="tintColor" systemColor="tertiarySystemBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <state key="normal" image="pause.fill" catalog="system">
+                                                            <attributedString key="attributedTitle"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="onPlayPauseBtn:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="uq4-Kp-eoA"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1L2-j9-kHg">
+                                                        <rect key="frame" x="24.5" y="0.0" width="19" height="22"/>
+                                                        <color key="tintColor" systemColor="tertiarySystemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <state key="normal" image="speaker.slash.fill" catalog="system">
+                                                            <attributedString key="attributedTitle"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="onMuteBtn:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="un1-m2-dsh"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="0d2-gd-CBT" secondAttribute="bottom" constant="10" id="EOO-fx-OFJ"/>
+                                            <constraint firstAttribute="trailing" secondItem="0d2-gd-CBT" secondAttribute="trailing" constant="10" id="NRj-Xa-F9h"/>
+                                            <constraint firstAttribute="bottom" secondItem="ItE-nN-tXt" secondAttribute="bottom" id="VRj-Gl-O9G"/>
+                                            <constraint firstAttribute="trailing" secondItem="ItE-nN-tXt" secondAttribute="trailing" id="lFL-qJ-Xe9"/>
+                                            <constraint firstItem="ItE-nN-tXt" firstAttribute="top" secondItem="Nq3-1v-AMx" secondAttribute="top" id="mH6-CD-uMQ"/>
+                                            <constraint firstItem="ItE-nN-tXt" firstAttribute="leading" secondItem="Nq3-1v-AMx" secondAttribute="leading" id="r4Q-Nn-AYS"/>
+                                        </constraints>
+                                    </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Joker" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hUs-lC-z6H">
                                         <rect key="frame" x="16" y="129" width="355" height="29"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
@@ -37,13 +83,6 @@
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nq3-1v-AMx">
-                                        <rect key="frame" x="0.0" y="0.0" width="491" height="210"/>
-                                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="210" id="5LG-mV-TGT"/>
-                                        </constraints>
-                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E5I-0E-qmD">
                                         <rect key="frame" x="0.0" y="211" width="491" height="80"/>
                                         <subviews>
@@ -262,17 +301,23 @@
                 <outlet property="artworkUrl100" destination="VOY-EA-iMP" id="oLv-8d-uZv"/>
                 <outlet property="moreBtn" destination="FtW-ME-50I" id="bK2-4a-EVt"/>
                 <outlet property="movieDetailLabel" destination="iq4-11-zg6" id="8dF-7M-YVo"/>
+                <outlet property="movieImageView" destination="ItE-nN-tXt" id="1J9-GO-caM"/>
+                <outlet property="movieImageViewHeight" destination="COP-ox-yOu" id="V8y-py-NcS"/>
                 <outlet property="movieTitleLabel" destination="hUs-lC-z6H" id="0eI-KM-NX4"/>
                 <outlet property="movieView" destination="Nq3-1v-AMx" id="EhT-Yg-CYG"/>
+                <outlet property="muteBtn" destination="1L2-j9-kHg" id="TT0-n7-e96"/>
+                <outlet property="playPauseBtn" destination="paz-Ke-n0S" id="PAB-VE-PYF"/>
                 <outlet property="primaryGenreName" destination="FOm-HJ-E3b" id="N6V-V9-BR9"/>
                 <outlet property="releaseDate" destination="0b1-BW-Vfn" id="IFL-BV-cVS"/>
                 <outlet property="removeBtn" destination="9bz-cY-maX" id="DBf-EU-xJv"/>
                 <outlet property="selectWatchedBtn" destination="iaU-zL-5Q3" id="PVH-qv-2LL"/>
             </connections>
-            <point key="canvasLocation" x="222.46376811594206" y="232.36607142857142"/>
+            <point key="canvasLocation" x="214" y="119"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="pause.fill" catalog="system" width="58" height="64"/>
+        <image name="speaker.slash.fill" catalog="system" width="64" height="62"/>
         <image name="star" catalog="system" width="64" height="58"/>
     </resources>
 </document>
