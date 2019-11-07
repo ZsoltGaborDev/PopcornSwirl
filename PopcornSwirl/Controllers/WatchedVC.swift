@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import Firebase
 
 class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var mainViewTopConstraint: NSLayoutConstraint!
     
     var tableViewDelegate: UITableView!
     var indexPath: IndexPath!
@@ -31,6 +33,7 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, L
         tableView.reloadData()
     }
     func config() {
+        mainViewTopConstraint.constant = -40
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UINib(nibName: "LatestMoviesCell", bundle: nil), forCellReuseIdentifier: "latestMoviesCell")
@@ -56,6 +59,15 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, L
             DataManager.shared.watchedList.remove(at: idx)
         }
         tableView.reloadData()
+    }
+    @IBAction func onLogOutBtn(_ sender: Any) {
+        do {
+            try Auth.auth().signOut()
+            navigationController?.popToRootViewController(animated: true)
+        }
+        catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
     }
 }
 

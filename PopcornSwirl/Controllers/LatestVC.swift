@@ -9,10 +9,14 @@
 import UIKit
 import AVFoundation
 import AVKit
+import Firebase
 
 class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var mainViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var logOutBtn: UIButton!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -33,10 +37,17 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        navigationController?.navigationBar.removeFromSuperview()
         tableView.reloadData()
         pausePlayeVideos()
+        
     }
     func config() {
+        mainViewTopConstraint.constant = -40
+        logOutBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
+        if let textfield = searchBar.value(forKey: "searchField") as? UITextField {
+            textfield.backgroundColor = UIColor.lightGray
+        }
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UINib(nibName: "LatestMoviesCell", bundle: nil), forCellReuseIdentifier: "latestMoviesCell")
@@ -106,5 +117,33 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     }
     func removeFromWatched(_ cell: LatestMoviesCell) {
     }
+    @IBAction func onLogOutBtn(_ sender: Any) {
+        do {
+            try Auth.auth().signOut()
+            navigationController?.popToRootViewController(animated: true)
+        }
+        catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
+    }
 }
 
+//MARK: search bar methods
+extension LatestVC: UISearchBarDelegate {
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        //let movies = DataManager.shared.mediaList.filter("primaryGenreName CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "releaseDate", ascending: true)
+        
+        tableView.reloadData()
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadData()
+            tableView.reloadData()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+}

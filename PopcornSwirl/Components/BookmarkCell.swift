@@ -17,7 +17,7 @@ protocol BookmarkCellDelegate {
 
 class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     
-    @IBOutlet weak var movieView: PlayerView!
+    @IBOutlet weak var movieView: UIView!
     @IBOutlet weak var movieImageView: UIImageView!
     @IBOutlet weak var movieTitleLabel: UILabel!
     @IBOutlet weak var movieDetailLabel: UILabel!

@@ -124,9 +124,9 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     }
     @IBAction func onMoreBtn(_ sender: Any) {
         let list = DataManager.shared.mediaList
-        let watchedMovie = list.filter({$0.id == self.movieId })
-        print("\(watchedMovie.first!.trackViewUrl!)")
-        guard let url = URL(string: watchedMovie.first!.trackViewUrl!) else {
+        let movie = list.filter({$0.id == self.movieId })
+        print("\(movie.first!.trackViewUrl!)")
+        guard let url = URL(string: movie.first!.trackViewUrl!) else {
           return //be safe
         }
         if #available(iOS 10.0, *) {

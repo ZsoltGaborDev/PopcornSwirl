@@ -9,12 +9,14 @@
 import UIKit
 import AVFoundation
 import AVKit
+import Firebase
 
 
 class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, BookmarkCellDelegate {
 
     
     @IBOutlet weak var bookmarkTableView: UITableView!
+    @IBOutlet weak var mainViewTopConstraint: NSLayoutConstraint!
     
     var indexPath = IndexPath()
     var bookmarkedTableViewDelegate: UITableView!
@@ -38,6 +40,7 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         pausePlayeVideos()
     }
     func config() {
+        mainViewTopConstraint.constant = -40
         bookmarkTableView.dataSource = self
         bookmarkTableView.delegate = self
         bookmarkTableView.register(UINib(nibName: "BookmarkCell", bundle: nil), forCellReuseIdentifier: "bookmarkCell")
@@ -84,6 +87,15 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     override func viewDidDisappear(_ animated: Bool) {
        ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: bookmarkTableView)
+    }
+    @IBAction func onLogOutBtn(_ sender: Any) {
+        do {
+            try Auth.auth().signOut()
+            navigationController?.popToRootViewController(animated: true)
+        }
+        catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
     }
 }
 
