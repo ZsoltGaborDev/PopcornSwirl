@@ -16,6 +16,7 @@ class MovieBrief {
     var longDescription: String?
     var previewUrl: String!
     var artworkData: Data?
+    var previewData: Data?
     var releaseDate: String?
     var primaryGenreName: String?
     var artworkUrl60: String?
@@ -33,12 +34,7 @@ class MovieBrief {
     }
 }
 
-class Movie: MovieBrief {
-    var collection: String?
-    var sourceUrl: String
-    
-    init(id: Int, title: String, trackViewUrl: String, description: String, longDescription: String, previewUrl: String, sourceUrl: String, releaseDate: String, primaryGenreName: String, artworkUrl60: String ) {
-        self.sourceUrl = sourceUrl
-        super.init(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
-    }
+class Movie {
+    var user: String!
+    var movie: MovieBrief!
 }

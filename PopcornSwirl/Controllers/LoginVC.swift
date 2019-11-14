@@ -18,8 +18,8 @@ class LoginVC: UIViewController {
     }
     override func viewDidAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.black
-        emailTextField.placeholder = "enter your email"
-        passwordTextField.placeholder = "password"
+        emailTextField.placeholder = K.emailTextFieldPlaceholder
+        passwordTextField.placeholder = K.passwordTextFieldPlaceholder
     }
 
     @IBAction func loginPressed(_ sender: UIButton) {

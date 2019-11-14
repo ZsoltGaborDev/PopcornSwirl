@@ -5,32 +5,51 @@
 //  Created by zsolt on 22/10/2019.
 //  Copyright © 2019 zsolt. All rights reserved.
 //
+// APP ID: ca-app-pub-1541131554989050~8522884864
+// UNIT ID: ca-app-pub-1541131554989050/3111594327
 
 import UIKit
 import AVFoundation
 import AVKit
 import Firebase
+import GoogleMobileAds
 
-class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate {
+class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate, GADBannerViewDelegate {
+   
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var mainViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var logOutBtn: UIButton!
+    @IBOutlet weak var bannerView: GADBannerView!
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+    //Variables
+    var tableViewItems = [AnyObject]()
     var tableViewDelegate: UITableView!
     var indexPath: IndexPath!
     var dataSource: [MovieBrief] {
         return DataManager.shared.mediaList
     }
+    var adsToLoad = [GADBannerView]()
+    var loadStateForAds = [GADBannerView: Bool]()
+    
+    //Constants
+    let adUnitID = "ca-app-pub-3940256099942544/2934735716"
+    // A banner ad is placed in the UITableView once per `adInterval`. iPads will have a
+    // larger ad interval to avoid mutliple ads being on screen at the same time.
+    let adInterval = UIDevice.current.userInterfaceIdiom == .pad ? 16 : 8
+    // The banner ad height.
+    let adViewHeight = CGFloat(100)
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(DataManager.shared.bookmarkedList.count)
-        config()
         loadData()
+        config()
         NotificationCenter.default.addObserver(self,
         selector: #selector(self.appEnteredFromBackground),
         name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -38,32 +57,40 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.navigationBar.removeFromSuperview()
-        tableView.reloadData()
+        //tableView.reloadData()
         pausePlayeVideos()
         
     }
     func config() {
-        mainViewTopConstraint.constant = -40
         logOutBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
         if let textfield = searchBar.value(forKey: "searchField") as? UITextField {
             textfield.backgroundColor = UIColor.lightGray
         }
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UINib(nibName: "LatestMoviesCell", bundle: nil), forCellReuseIdentifier: "latestMoviesCell")
+        tableView.register(UINib(nibName: K.latestMoviesCellNibName, bundle: nil), forCellReuseIdentifier: K.latestMoviesCellReuseId)
+        tableView.register(UINib(nibName: "BannerAd", bundle: nil),
+        forCellReuseIdentifier: "bannerAd")
+        
+        // Allow row height to be determined dynamically while optimizing with an estimated row height.
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 135
     }
     func loadData() {
-        MediaService.getMovieList(term: "movie") { (success, list) in
+        MediaService.getMovieList(term: K.searchTerm ) { (success, list) in
             if success, let list = list {
                 let ready = list.sorted(by: { $0.releaseDate!.compare($1.releaseDate!) == .orderedDescending })
-                
+            
                 DataManager.shared.mediaList = ready
                 DispatchQueue.main.async {
+                    self.addMenuItems()
+                    self.addBannerAds()
+                    self.preloadNextAd()
                     self.tableView.reloadData()
                 }
             } else {
                 self.presentNoDataAlert(title: "Oops, something happened...",
-                message: "Couldn't load any fun stuff for you:(")
+            message: "Couldn't load any fun stuff for you:(")
             }
         }
     }
@@ -78,21 +105,60 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         alertController.addAction(dismissAction)
         present(alertController, animated: true)
     }
-    
+    func tableView(_ tableView: UITableView,
+        heightForRowAt indexPath: IndexPath) -> CGFloat {
+      if let tableItem = tableViewItems[indexPath.row] as? GADBannerView {
+        let isAdLoaded = loadStateForAds[tableItem]
+        return isAdLoaded == true ? adViewHeight : 0
+      }
+      return UITableView.automaticDimension
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+        return tableViewItems.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "latestMoviesCell", for: indexPath) as! LatestMoviesCell
-        cell.delegate = self
-        cell.delegate?.tableViewDelegate = tableView
-        cell.delegate?.indexPath = indexPath
-        let movieBrief = dataSource[indexPath.row]
-        cell.configureCell(movieBrief: movieBrief)
-        cell.removeBtn.isHidden = true
-        cell.checkIfWatched(id: movieBrief.id)
-        return cell
+        if let BannerView = tableViewItems[indexPath.row] as? GADBannerView {
+          let reusableAdCell = tableView.dequeueReusableCell(withIdentifier: "bannerAd",
+              for: indexPath)
+
+          // Remove previous GADBannerView from the content view before adding a new one.
+          for subview in reusableAdCell.contentView.subviews {
+            subview.removeFromSuperview()
+          }
+
+          reusableAdCell.contentView.addSubview(BannerView)
+          // Center GADBannerView in the table cell's content view.
+          BannerView.center = reusableAdCell.contentView.center
+
+          return reusableAdCell
+
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: K.latestMoviesCellReuseId, for: indexPath) as! LatestMoviesCell
+            cell.delegate = self
+            cell.delegate?.tableViewDelegate = tableView
+            cell.delegate?.indexPath = indexPath
+            let movieBrief = dataSource[indexPath.row]
+            cell.configureCell(movieBrief: movieBrief)
+            cell.removeBtn.isHidden = true
+            cell.checkIfWatched(id: movieBrief.id)
+            return cell
+        }
     }
+    // MARK: - GADBannerView delegate methods
+
+    func adViewDidReceiveAd(_ adView: GADBannerView) {
+      // Mark banner ad as succesfully loaded.
+      loadStateForAds[adView] = true
+      // Load the next ad in the adsToLoad list.
+      preloadNextAd()
+    }
+    func adView(_ adView: GADBannerView,
+        didFailToReceiveAdWithError error: GADRequestError) {
+      print("Failed to receive ad: \(error.localizedDescription)")
+      // Load the next ad in the adsToLoad list.
+      preloadNextAd()
+    }
+    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let videoCell = cell as? ASAutoPlayVideoLayerContainer, videoCell.videoURL != nil {
             ASVideoPlayerController.sharedVideoPlayer.removeLayerFor(cell: videoCell)
@@ -120,6 +186,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     @IBAction func onLogOutBtn(_ sender: Any) {
         do {
             try Auth.auth().signOut()
+            navigationController?.navigationBar.isHidden = false
             navigationController?.popToRootViewController(animated: true)
         }
         catch let signOutError as NSError {
@@ -146,4 +213,42 @@ extension LatestVC: UISearchBarDelegate {
             }
         }
     }
+    // MARK: Adds banner ads to the tableViewItems list.
+
+    func addBannerAds() {
+      var index = adInterval
+      // Ensure subview layout has been performed before accessing subview sizes.
+      tableView.layoutIfNeeded()
+      while index < tableViewItems.count {
+        let adSize = GADAdSizeFromCGSize(
+            CGSize(width: tableView.contentSize.width, height: adViewHeight))
+        let adView = GADBannerView(adSize: adSize)
+        adView.adUnitID = adUnitID
+        adView.rootViewController = self
+        adView.delegate = self
+
+        tableViewItems.insert(adView, at: index)
+        adsToLoad.append(adView)
+        loadStateForAds[adView] = false
+
+        index += adInterval
+      }
+    }
+
+    /// Preload banner ads sequentially. Dequeue and load next ad from `adsToLoad` list.
+    func preloadNextAd() {
+      if !adsToLoad.isEmpty {
+        let ad = adsToLoad.removeFirst()
+        let adRequest = GADRequest()
+        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = [ kGADSimulatorID as! String ]
+        ad.load(adRequest)
+      }
+    }
+    func addMenuItems() {
+        for item in dataSource {
+            tableViewItems.append(item)
+        }
+    }
+
 }
+

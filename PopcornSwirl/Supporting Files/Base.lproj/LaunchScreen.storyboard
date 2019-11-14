@@ -40,19 +40,20 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="... loading" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="47X-IE-LXl">
-                                        <rect key="frame" x="236" y="14.5" width="138" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="232" y="27" width="166" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="47X-IE-LXl" secondAttribute="trailing" constant="40" id="0KY-88-BRs"/>
-                                    <constraint firstItem="47X-IE-LXl" firstAttribute="centerY" secondItem="Goa-wb-FVQ" secondAttribute="centerY" id="ECs-fT-NUU"/>
-                                    <constraint firstItem="47X-IE-LXl" firstAttribute="leading" secondItem="Fgc-PY-YaF" secondAttribute="trailing" constant="20" id="J8e-gb-UVK"/>
+                                    <constraint firstAttribute="trailing" secondItem="47X-IE-LXl" secondAttribute="trailing" constant="16" id="0KY-88-BRs"/>
+                                    <constraint firstAttribute="bottom" secondItem="47X-IE-LXl" secondAttribute="bottom" constant="5" id="F2I-5I-gnd"/>
+                                    <constraint firstItem="47X-IE-LXl" firstAttribute="leading" secondItem="Fgc-PY-YaF" secondAttribute="trailing" constant="16" id="J8e-gb-UVK"/>
                                     <constraint firstItem="Fgc-PY-YaF" firstAttribute="leading" secondItem="Goa-wb-FVQ" secondAttribute="leading" constant="16" id="Zbd-I3-JpI"/>
                                     <constraint firstAttribute="bottom" secondItem="Fgc-PY-YaF" secondAttribute="bottom" id="pYg-fW-uOh"/>
+                                    <constraint firstItem="47X-IE-LXl" firstAttribute="top" secondItem="Goa-wb-FVQ" secondAttribute="top" constant="27" id="wiN-KX-KYN"/>
                                     <constraint firstItem="Fgc-PY-YaF" firstAttribute="top" secondItem="Goa-wb-FVQ" secondAttribute="top" id="x6w-OM-1u2"/>
                                 </constraints>
                             </view>

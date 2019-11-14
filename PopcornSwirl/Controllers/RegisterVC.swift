@@ -32,7 +32,7 @@ class RegisterVC: UIViewController {
                 if let e = error {
                     print(e.localizedDescription)
                     let alert = UIAlertController(title: "", message: e.localizedDescription, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                    alert.addAction(UIAlertAction(title: K.cancel, style: .cancel, handler: nil))
                     self.present(alert, animated: true)
                 } else {
                     //Navigate to the ChatViewController

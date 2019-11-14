@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import AVKit
+import Firebase
 
 protocol BookmarkCellDelegate {
     func removeFromBookmarked(_ cell: BookmarkCell)
@@ -36,6 +37,7 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     var bookmarkCellDelegate: BookmarkCellDelegate?
     var movieId = Int()
     var videoPauseIsOn = false
+    var videoControllersHidden = false
     var videoURL: String? {
         didSet {
             if let videoURL = videoURL {
@@ -55,6 +57,9 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         videoLayer.videoGravity = AVLayerVideoGravity.resize
         movieImageView.layer.addSublayer(videoLayer)
         selectionStyle = .none
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+        movieImageView.addGestureRecognizer(tap)
+        movieImageView.isUserInteractionEnabled = true
     }
     func configureCell(movieBrief: MovieBrief) {
         self.videoURL = movieBrief.previewUrl
@@ -90,7 +95,7 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
              return 0
         }
         if !superViewFrame.isNull {
-            playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+            playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
             videoPauseIsOn = false
         }
         let visibleVideoFrame = videoFrame.intersection(superViewFrame)
@@ -121,12 +126,25 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         if checkIfWatched(id: movieId) {
             return
         } else {
-            let list = DataManager.shared.bookmarkedList
+            let list = DataManager.shared.mediaList
             let watchedMovie = list.filter({$0.id == self.movieId })
-            DataManager.shared.watchedList.append(watchedMovie.first!)
-            selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
-            addToWatchedLabel.text = "WATCHED"
+            
+            if let watchedMovieToStore = watchedMovie.first, let user = Auth.auth().currentUser?.email {
+                DataManager.dbShared.collection(K.FirebaseStore.watched).addDocument(data: [
+                K.FirebaseStore.user: user,
+                K.FirebaseStore.dateField: Date().timeIntervalSince1970,
+                K.FirebaseStore.movieBriefId: watchedMovieToStore.id!]) { (error) in
+                    if let e = error {
+                        print("There were issues saving data to firestore, \(e)")
+                    } else {                                    self.selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                        self.addToWatchedLabel.text = "WATCHED"
+                        print("Successfully saved data.")
+                    }
+                }
+            }
         }
+        
+        
     }
     @IBAction func onRemoveBtn(_ sender: Any) {
         bookmarkCellDelegate?.removeFromBookmarked(self)
@@ -149,34 +167,49 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             if let url = videoURL {
                 ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: url)
                 videoPauseIsOn = false
-                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
             } else {
                 print("videoUrl error")
             }
         } else {
             ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: bookmarkCellDelegate!.bookmarkedTableViewDelegate!)
             videoPauseIsOn = true
-            playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
+            playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
         }
     }
     @IBAction func onMuteBtn(_ sender: Any) {
         if ASVideoPlayerController.sharedVideoPlayer.mute {
             ASVideoPlayerController.sharedVideoPlayer.mute = false
             ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
-            muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
+            muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
             if !visibleVideoHeight().isZero {
-                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
                 videoPauseIsOn = false
             }
         } else {
             ASVideoPlayerController.sharedVideoPlayer.mute = true
             ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
 
-            muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
+            muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
             if !visibleVideoHeight().isZero {
-                playPauseBtn.setImage(UIImage(systemName: "pause"), for: .normal)
+                playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
                 videoPauseIsOn = false
             }
+        }
+    }
+    @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
+        if videoControllersHidden {
+            playPauseBtn.isHidden = false
+            muteBtn.isHidden = false
+            movieTitleLabel.isHidden = false
+            videoControllersHidden = false
+            releaseDate.isHidden = false
+        } else {
+            playPauseBtn.isHidden = true
+            muteBtn.isHidden = true
+            movieTitleLabel.isHidden = true
+            videoControllersHidden = true
+            releaseDate.isHidden = true
         }
     }
 }

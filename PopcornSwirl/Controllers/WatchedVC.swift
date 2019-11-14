@@ -25,24 +25,63 @@ class WatchedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, L
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(DataManager.shared.bookmarkedList.count)
         config()
+        loadMovie()
+        print("are \(dataSource.count) watched movies")
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         tableView.reloadData()
     }
     func config() {
-        mainViewTopConstraint.constant = -40
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UINib(nibName: "LatestMoviesCell", bundle: nil), forCellReuseIdentifier: "latestMoviesCell")
+        tableView.register(UINib(nibName: K.latestMoviesCellNibName, bundle: nil), forCellReuseIdentifier: K.latestMoviesCellReuseId)
+    }
+    func loadMovie() {
+        DataManager.dbShared.collection(K.FirebaseStore.watched).order(by: K.FirebaseStore.dateField).addSnapshotListener { (querySnapshot, error) in
+            DataManager.shared.watchedList = []
+            if let e = error {
+                print("There was an issue retrieveng data from Firestore. \(e)")
+            } else {
+                if let snapshotDocuments = querySnapshot?.documents {
+                    for doc in snapshotDocuments {
+                        let data = doc.data()
+                        if let movieId = data[K.FirebaseStore.movieBriefId] as? Int {
+                            MediaService.getMovie(id: movieId) { (success, movie) in
+                                if success, let movie = movie {
+                                    let selectedMovie = movie
+                                    DataManager.shared.watchedList.append(selectedMovie)
+                                    DispatchQueue.main.async {
+                                        self.tableView.reloadData()
+                                    }
+                                } else {
+                                    self.presentNoDataAlert(title: "Oops, something happened...",
+                                message: "Couldn't load any fun stuff for you:(")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    func presentNoDataAlert(title: String?, message: String?) {
+        let alertController = UIAlertController(title: title,
+                                                message: message,
+                                                preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "Got it", style: .cancel, handler: { (action) -> Void in
+        })
+        
+        alertController.addAction(dismissAction)
+        present(alertController, animated: true)
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "latestMoviesCell", for: indexPath) as! LatestMoviesCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: K.latestMoviesCellReuseId, for: indexPath) as! LatestMoviesCell
         let movieBrief = dataSource[indexPath.row]
         cell.delegate = self
         cell.configureCell(movieBrief: movieBrief)

@@ -17,11 +17,7 @@ class MediaService {
         
         static let searchURL = URL(string: API.search)
         static let lookupURL = URL(string: API.lookup)
-
-        static func getMediaList() {
-        }
     }
-    
     private static func createRequest(url: URL, params: [String: Any]) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -32,17 +28,14 @@ class MediaService {
 
         return request
     }
-    
     private static func createSearchRequest(term: String) -> URLRequest {
         let params = ["term": term, "media": "movie", "entity": "movie"]
         return createRequest(url: API.searchURL!, params: params)
     }
-    
     private static func createLookupRequest(id: Int) -> URLRequest {
         let params = ["id": id]
         return createRequest(url: API.lookupURL!, params: params)
     }
-        
     static func getMovieList(term: String, completion: @escaping (Bool, [MovieBrief]?) -> Void) {
         
         let session = URLSession(configuration: .default)
@@ -83,8 +76,7 @@ class MediaService {
         }
         task.resume()
     }
-    
-    static func getMovie(id: Int, completion: @escaping (Bool, Movie?) -> Void) {
+    static func getMovie(id: Int, completion: @escaping (Bool, MovieBrief?) -> Void) {
         let session = URLSession(configuration: .default)
         let request = createLookupRequest(id: id)
         
@@ -101,31 +93,27 @@ class MediaService {
                         let title = movie["trackName"] as? String,
                         let trackViewUrl = movie["trackViewUrl"] as? String,
                         let description = movie["shortDescription"] as? String,
-                        let longDescription = movie["longDescription"] as? String,
                         let previewUrl = movie["previewUrl"] as? String,
-                        let sourceUrl = movie["trackViewUrl"] as? String,
-                        let releaseDate = movie["releaseDate"] as?
-                            String,
+                        let releaseDate = movie["releaseDate"] as? String,
+                        let longDescription = movie["longDescription"] as? String,
                         let primaryGenreName = movie["primaryGenreName"] as? String,
                         let artworkUrl60 = movie["artworkUrl100"] as? String {
-                        let media = Movie(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, sourceUrl: sourceUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
-                            media.collection = movie["collectionName"] as? String
-                            completion(true, media)
-                        }
-                        else {
-                            completion(false, nil)
-                        }
+                        let movie = MovieBrief(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
+                            completion(true, movie)
                     }
                     else {
                         completion(false, nil)
                     }
-                } else {
+                }
+                else {
                     completion(false, nil)
+                }
+            } else {
+                completion(false, nil)
             }
         }
         task.resume()
     }
-    
     static func getImage(imageUrl: URL, completion: @escaping (Bool, Data?) -> Void) {
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: imageUrl) { (data, response, error) in
@@ -135,19 +123,6 @@ class MediaService {
             }
             else {
                 completion(false, nil)
-            }
-        }
-        task.resume()
-    }
-    
-    static func getVideo(videoUrl: URL, completion: @escaping (Bool) -> Void) {
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: videoUrl) { (data, response, error) in
-            if error == nil, let response = response as? HTTPURLResponse, response.statusCode == 200 {
-                completion(true)
-            }
-            else {
-                completion(false)
             }
         }
         task.resume()

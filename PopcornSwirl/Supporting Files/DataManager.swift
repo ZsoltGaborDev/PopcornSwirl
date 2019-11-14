@@ -5,10 +5,37 @@
 //  Created by zsolt on 23/10/2019.
 //  Copyright © 2019 zsolt. All rights reserved.
 //
-
+import UIKit
 import Foundation
+import Firebase
 
 class DataManager {
+    
+    static let dbShared = Firestore.firestore()
+    
+    static func getMovies(collection: String) -> [MovieBrief]{
+        var movies: [MovieBrief] = []
+        DataManager.dbShared.collection(collection).order(by: K.FirebaseStore.dateField).getDocuments { (querySnapshot, error) in
+            if let e = error {
+                print("There was an issue retrieveng data from Firestore. \(e)")
+            } else {
+                if let snapshotDocuments = querySnapshot?.documents {
+                    for doc in snapshotDocuments {
+                        let data = doc.data()
+                        if let movieId = data[K.FirebaseStore.movieBriefId] as? Int {
+                            MediaService.getMovie(id: movieId) { (success, movie) in
+                                if success, let movie = movie {
+                                    movies.append(movie)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return movies
+    }
+    
     
     static let shared = DataManager()
     private init() {
@@ -16,11 +43,7 @@ class DataManager {
     }
     lazy var mediaList: [MovieBrief] = {
         var list = [MovieBrief]()
-        
-        for i in 0 ..< 10 {
-            let media = MovieBrief(id: 3563563, title: "fake title \(i)", trackViewUrl: "fake link", description: "fake description", longDescription: "fake description", previewUrl: "fake URL", releaseDate: "fake date", primaryGenreName: "", artworkUrl60: "")
-            list.append(media)
-        }
+
         return list
     }()
     
@@ -35,7 +58,6 @@ class DataManager {
         
         return list
     }()
-    
     
     func formatDate(date: String) -> String {
         let input = date
