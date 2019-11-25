@@ -38,7 +38,6 @@ class DataManager {
         MediaService.getMovieList(term: K.searchTerm ) { (success, list) in
             if success, let list = list {
                 let ready = list.sorted(by: { $0.releaseDate!.compare($1.releaseDate!) == .orderedDescending })
-                print("movie from API: \(ready.count)")
                 FIRFirestoreService.shared.read(from: .movies, returning: MovieBrief.self) { (existingMovies) in
                 for movie in ready {
                     guard !existingMovies.contains(where: {movie.trackId == $0.trackId}) else { return }

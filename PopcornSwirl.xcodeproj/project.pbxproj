@@ -35,7 +35,6 @@
 		D7933CB323735947006034FE /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7933CB223735947006034FE /* LoginVC.swift */; };
 		D79C6E14237D78AE00F350BF /* BannerAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79C6E12237D78AE00F350BF /* BannerAd.swift */; };
 		D79C6E15237D78AE00F350BF /* BannerAd.xib in Resources */ = {isa = PBXBuildFile; fileRef = D79C6E13237D78AE00F350BF /* BannerAd.xib */; };
-		D79DF422238A8052004DCF2D /* ViewControllerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79DF421238A8052004DCF2D /* ViewControllerEx.swift */; };
 		D7F69FBC236447D100901984 /* ASVideoContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F69FBB236447D100901984 /* ASVideoContainer.swift */; };
 		D7F69FBE2364480700901984 /* ASAutoPlayVideoLayerContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F69FBD2364480700901984 /* ASAutoPlayVideoLayerContainer.swift */; };
 		D7F69FC02364483000901984 /* ASVideoLayerObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F69FBF2364483000901984 /* ASVideoLayerObject.swift */; };
@@ -75,7 +74,6 @@
 		D7933CB223735947006034FE /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		D79C6E12237D78AE00F350BF /* BannerAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerAd.swift; sourceTree = "<group>"; };
 		D79C6E13237D78AE00F350BF /* BannerAd.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BannerAd.xib; sourceTree = "<group>"; };
-		D79DF421238A8052004DCF2D /* ViewControllerEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerEx.swift; sourceTree = "<group>"; };
 		D7D786A7236E38ED005FCF4E /* TinyPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TinyPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7F69FBB236447D100901984 /* ASVideoContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASVideoContainer.swift; sourceTree = "<group>"; };
 		D7F69FBD2364480700901984 /* ASAutoPlayVideoLayerContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASAutoPlayVideoLayerContainer.swift; sourceTree = "<group>"; };
@@ -210,7 +208,6 @@
 		D74701772361DA4A00406396 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				D79DF421238A8052004DCF2D /* ViewControllerEx.swift */,
 				D7267B1323687194003B05DE /* CustomButton.swift */,
 				D7933CA823735668006034FE /* Constants.swift */,
 			);
@@ -370,7 +367,6 @@
 				D747017223604CAF00406396 /* LatestMoviesCell.swift in Sources */,
 				D747016F2360425500406396 /* MediaServices.swift in Sources */,
 				D7267B1623689C44003B05DE /* WatchedVC.swift in Sources */,
-				D79DF422238A8052004DCF2D /* ViewControllerEx.swift in Sources */,
 				D72AFEC9235F7B9200096F68 /* AppDelegate.swift in Sources */,
 				D748DB5F2386E67000655CF4 /* FIRCollectionReference.swift in Sources */,
 				D7470166235FA93D00406396 /* Movie.swift in Sources */,

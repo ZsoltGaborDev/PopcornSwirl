@@ -119,7 +119,6 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
 }
 extension BookmarkVC: GADBannerViewDelegate {
     func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        print("received ad on bookmarked view")
     }
     func adView(_bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
         print(" Error receiving add on bookmarked view \(error.localizedDescription)")
