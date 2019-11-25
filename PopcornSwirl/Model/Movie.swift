@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol Identifiable {
+    var documentId: String? { get set }
+}
+
 class MovieBrief: Codable, Identifiable {
     var documentId: String? = nil
     
@@ -39,19 +43,4 @@ class MovieBrief: Codable, Identifiable {
     }
 }
 
-protocol Identifiable {
-    var documentId: String? { get set }
-}
-class Movie: Codable, Identifiable {
-    var user: String!
-    var movieId: Int!
-    var documentId: String? = nil
-    var comment: String?
-    
-    init(user: String, movieId: Int, comment: String) {
-        self.user = user
-        self.movieId = movieId
-        self.comment = comment
-        
-    }
-}
+
