@@ -51,6 +51,13 @@ class ASVideoPlayerController: NSObject, NSCacheDelegate {
      Uses the asset to create new playeritem.
      */
     func setupVideoFor(url: String) {
+        do{
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        }
+        catch{
+            print(error)
+        }
         if self.videoCache.object(forKey: url as NSString) != nil {
             return
         }

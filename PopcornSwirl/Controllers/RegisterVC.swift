@@ -13,7 +13,8 @@ class RegisterVC: UIViewController {
 
     @IBOutlet weak var emailTextfield: UITextField!
     @IBOutlet weak var passwordTextfield: UITextField!
-     
+    @IBOutlet weak var cancelBtn: UIButton!
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
@@ -26,7 +27,6 @@ class RegisterVC: UIViewController {
         self.navigationController?.navigationBar.tintColor = UIColor.orange
     }
     @IBAction func registerPressed(_ sender: UIButton) {
-       
         if let email = emailTextfield.text, let password = passwordTextfield.text {
             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                 if let e = error {
@@ -41,5 +41,15 @@ class RegisterVC: UIViewController {
             }
         }
     }
+    @IBAction func cancelBtnPressed(_ sender: Any) {
+        navigationController?.popToRootViewController(animated: true)
+    }
+    @IBAction func donePassword(_ sender: UITextField) {
+        sender.resignFirstResponder()
+    }
+    @IBAction func doneEmail(_ sender: UITextField) {
+        sender.resignFirstResponder()
+    }
+    
     
 }

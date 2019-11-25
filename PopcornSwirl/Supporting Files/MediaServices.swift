@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class MediaService {
     
@@ -32,8 +33,8 @@ class MediaService {
         let params = ["term": term, "media": "movie", "entity": "movie"]
         return createRequest(url: API.searchURL!, params: params)
     }
-    private static func createLookupRequest(id: Int) -> URLRequest {
-        let params = ["id": id]
+    private static func createLookupRequest(trackId: Int) -> URLRequest {
+        let params = ["trackId": trackId]
         return createRequest(url: API.lookupURL!, params: params)
     }
     static func getMovieList(term: String, completion: @escaping (Bool, [MovieBrief]?) -> Void) {
@@ -51,7 +52,7 @@ class MediaService {
                             guard let movie = results[i] as? [String: Any] else {
                                 continue
                             }
-                            if let id = movie["trackId"] as? Int,
+                            if let trackId = movie["trackId"] as? Int,
                                 let title = movie["trackName"] as? String,
                                 let trackViewUrl = movie["trackViewUrl"] as? String,
                                 let description = movie["shortDescription"] as? String,
@@ -60,7 +61,7 @@ class MediaService {
                                 let longDescription = movie["longDescription"] as? String,
                                 let primaryGenreName = movie["primaryGenreName"] as? String,
                                 let artworkUrl60 = movie["artworkUrl100"] as? String {
-                                let movie = MovieBrief(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
+                                let movie = MovieBrief(trackId: trackId, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
                                     list.append(movie)
                             }
                         }
@@ -76,9 +77,9 @@ class MediaService {
         }
         task.resume()
     }
-    static func getMovie(id: Int, completion: @escaping (Bool, MovieBrief?) -> Void) {
+    static func getMovie(trackId: Int, completion: @escaping (Bool, MovieBrief?) -> Void) {
         let session = URLSession(configuration: .default)
-        let request = createLookupRequest(id: id)
+        let request = createLookupRequest(trackId: trackId)
         
         
         let task = session.dataTask(with: request) { (data, response, error) in
@@ -89,7 +90,7 @@ class MediaService {
                     
                     if results.count > 0,
                         let movie = results[0] as? [String: Any],
-                        let id = movie["trackId"] as? Int,
+                        let trackId = movie["trackId"] as? Int,
                         let title = movie["trackName"] as? String,
                         let trackViewUrl = movie["trackViewUrl"] as? String,
                         let description = movie["shortDescription"] as? String,
@@ -98,7 +99,7 @@ class MediaService {
                         let longDescription = movie["longDescription"] as? String,
                         let primaryGenreName = movie["primaryGenreName"] as? String,
                         let artworkUrl60 = movie["artworkUrl100"] as? String {
-                        let movie = MovieBrief(id: id, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
+                        let movie = MovieBrief(trackId: trackId, title: title, trackViewUrl: trackViewUrl, description: description, longDescription: longDescription, previewUrl: previewUrl, releaseDate: releaseDate, primaryGenreName: primaryGenreName, artworkUrl60: artworkUrl60)
                             completion(true, movie)
                     }
                     else {
@@ -126,5 +127,18 @@ class MediaService {
             }
         }
         task.resume()
+    }
+    static func moreBtnPressed(movieId: Int) {
+        let list = DataManager.shared.mediaList
+        let movie = list.filter({$0.trackId == movieId })
+        print("\(movie.first!.trackViewUrl!)")
+        guard let url = URL(string: movie.first!.trackViewUrl!) else {
+          return //be safe
+        }
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
     }
 }

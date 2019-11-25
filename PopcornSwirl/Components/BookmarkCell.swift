@@ -13,6 +13,7 @@ import Firebase
 
 protocol BookmarkCellDelegate {
     func removeFromBookmarked(_ cell: BookmarkCell)
+    func addNote(_ cell:BookmarkCell)
     var bookmarkedTableViewDelegate: UITableView! { get set }
 }
 
@@ -38,6 +39,9 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     var movieId = Int()
     var videoPauseIsOn = false
     var videoControllersHidden = false
+    @IBOutlet weak var noteLabel: UILabel!
+    @IBOutlet weak var commentBtn: UIButton!
+    
     var videoURL: String? {
         didSet {
             if let videoURL = videoURL {
@@ -46,7 +50,8 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             }
             videoLayer.isHidden = videoURL == nil
         }
-    }    
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         movieImageView.layer.cornerRadius = 5
@@ -79,7 +84,7 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
                 }
             })
         }
-        movieId = movieBrief.id
+        movieId = movieBrief.trackId
     }
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -101,73 +106,21 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         let visibleVideoFrame = videoFrame.intersection(superViewFrame)
         return visibleVideoFrame.size.height
     }
-    @discardableResult
-    func checkIfWatched(id: Int) -> Bool {
-        let list = DataManager.shared.watchedList
-               let watchedMovie = list.filter({$0.id == id })
-        if let movie = watchedMovie.first {
-            if movie.id == id {
-                selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                addToWatchedLabel.text = "WATCHED"
-                return true
-            } else {
-                selectWatchedBtn.setImage(UIImage(systemName: "star"), for: .normal)
-                addToWatchedLabel.text = "ADD TO WATCHED"
-                return false
-            }
-        } else {
-            selectWatchedBtn.setImage(UIImage(systemName: "star"), for: .normal)
-            addToWatchedLabel.text = "ADD TO WATCHED"
-            return false
-        }
-    }
-    
     @IBAction func onSelectWatchedBtn(_ sender: Any) {
-        if checkIfWatched(id: movieId) {
-            return
-        } else {
-            let list = DataManager.shared.mediaList
-            let watchedMovie = list.filter({$0.id == self.movieId })
-            
-            if let watchedMovieToStore = watchedMovie.first, let user = Auth.auth().currentUser?.email {
-                DataManager.dbShared.collection(K.FirebaseStore.watched).addDocument(data: [
-                K.FirebaseStore.user: user,
-                K.FirebaseStore.dateField: Date().timeIntervalSince1970,
-                K.FirebaseStore.movieBriefId: watchedMovieToStore.id!]) { (error) in
-                    if let e = error {
-                        print("There were issues saving data to firestore, \(e)")
-                    } else {                                    self.selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                        self.addToWatchedLabel.text = "WATCHED"
-                        print("Successfully saved data.")
-                    }
-                }
-            }
-        }
-        
-        
+        DataManager.watchedBtnPressed(movieId: movieId, watchedBtn: selectWatchedBtn, watchedLabel: addToWatchedLabel, tableview: bookmarkCellDelegate!.bookmarkedTableViewDelegate)
     }
     @IBAction func onRemoveBtn(_ sender: Any) {
         bookmarkCellDelegate?.removeFromBookmarked(self)
     }
     @IBAction func onMoreBtn(_ sender: Any) {
-        let list = DataManager.shared.bookmarkedList
-        let bookmarkedMovie = list.filter({$0.id == self.movieId })
-        //print("\(bookmarkedMovie.first!.trackViewUrl!)")
-        guard let url = URL(string: bookmarkedMovie.first!.trackViewUrl!) else {
-            return //be safe
-        }
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
-        }
+        MediaService.moreBtnPressed(movieId: movieId)
     }
     @IBAction func onPlayPauseBtn(_ sender: Any) {
         if videoPauseIsOn {
             if let url = videoURL {
                 ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: url)
-                videoPauseIsOn = false
-                playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
+                    videoPauseIsOn = false
+            playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
             } else {
                 print("videoUrl error")
             }
@@ -181,7 +134,7 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         if ASVideoPlayerController.sharedVideoPlayer.mute {
             ASVideoPlayerController.sharedVideoPlayer.mute = false
             ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
-            muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
+                muteBtn.setImage(UIImage(systemName: "speaker.2"), for: .normal)
             if !visibleVideoHeight().isZero {
                 playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
                 videoPauseIsOn = false
@@ -189,14 +142,14 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         } else {
             ASVideoPlayerController.sharedVideoPlayer.mute = true
             ASVideoPlayerController.sharedVideoPlayer.playVideo(withLayer: videoLayer, url: videoURL!)
-
-            muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
+                muteBtn.setImage(UIImage(systemName: "speaker.slash"), for: .normal)
             if !visibleVideoHeight().isZero {
                 playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
                 videoPauseIsOn = false
             }
         }
     }
+        
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         if videoControllersHidden {
             playPauseBtn.isHidden = false
@@ -212,4 +165,8 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             releaseDate.isHidden = true
         }
     }
+    @IBAction func onCommentBtn(_ sender: Any) {
+        bookmarkCellDelegate?.addNote(self)
+    }
+    
 }

@@ -25,7 +25,7 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     var indexPath = IndexPath()
     var bookmarkedTableViewDelegate: UITableView!
     var dataSource: [MovieBrief] {
-           return DataManager.shared.bookmarkedList
+        DataManager.shared.bookmarkedList
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -34,17 +34,15 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         config()
-        loadMovie()
         adMobSetup()
-        print("are \(dataSource.count) bookmarked movies")
         NotificationCenter.default.addObserver(self,
         selector: #selector(self.appEnteredFromBackground),
         name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        bookmarkTableView.reloadData()
         pausePlayeVideos()
+        DataManager.loadBookmarkedMovie(tableView: bookmarkTableView)
     }
     func config() {
         bookmarkTableView.dataSource = self
@@ -57,45 +55,6 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         bannerView.rootViewController = self
         bannerView.load(GADRequest())
     }
-    func loadMovie() {
-        DataManager.dbShared.collection(K.FirebaseStore.bookmarked).order(by: K.FirebaseStore.dateField).addSnapshotListener { (querySnapshot, error) in
-            DataManager.shared.bookmarkedList = []
-            if let e = error {
-                print("There was an issue retrieveng data from Firestore. \(e)")
-            } else {
-                if let snapshotDocuments = querySnapshot?.documents {
-                    for doc in snapshotDocuments {
-                        let data = doc.data()
-                        if let movieId = data[K.FirebaseStore.movieBriefId] as? Int {
-                            MediaService.getMovie(id: movieId) { (success, movie) in
-                                if success, let movie = movie {
-                                    let selectedMovie = movie
-                                    DataManager.shared.bookmarkedList.append(selectedMovie)
-                                    DispatchQueue.main.async {
-                                        self.bookmarkTableView.reloadData()
-                                    }
-                                } else {
-                                    self.presentNoDataAlert(title: "Oops, something happened...",
-                                message: "Couldn't load any fun stuff for you:(")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    func presentNoDataAlert(title: String?, message: String?) {
-        let alertController = UIAlertController(title: title,
-                                                message: message,
-                                                preferredStyle: .alert)
-        
-        let dismissAction = UIAlertAction(title: "Got it", style: .cancel, handler: { (action) -> Void in
-        })
-        
-        alertController.addAction(dismissAction)
-        present(alertController, animated: true)
-    }
     func tableView(_ bookmarkTableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
@@ -106,7 +65,10 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         cell.bookmarkCellDelegate?.bookmarkedTableViewDelegate = bookmarkTableView
         let movieBrief = dataSource[indexPath.row]
         cell.configureCell(movieBrief: movieBrief)
-        cell.checkIfWatched(id: movieBrief.id)
+        if movieBrief.note.count > 0 {
+            cell.noteLabel.text = movieBrief.note
+        }
+        DataManager.checkIfWatched(id: movieBrief.trackId, selectWatchedBtn: cell.selectWatchedBtn, addToWatchedLabel: cell.addToWatchedLabel)
         return cell
     }
     func tableView(_ bookmarkTableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -130,10 +92,17 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         pausePlayeVideos()
     }
     func removeFromBookmarked(_ cell: BookmarkCell) {
-        if let idx = DataManager.shared.bookmarkedList.firstIndex(where: { $0.id == cell.movieId }) {
-            DataManager.shared.bookmarkedList.remove(at: idx)
+        let movieToRemove = DataManager.shared.mediaList.filter({$0.trackId == cell.movieId}).first
+        if let movie = movieToRemove {
+            movie.bookmarked = false
+            FIRFirestoreService.shared.update(for: movie, in: .movies)
+            DataManager.loadBookmarkedMovie(tableView: bookmarkTableView)
         }
-            bookmarkTableView.reloadData()
+    }
+    func addNote(_ cell: BookmarkCell) {
+        DataManager.commentBtnPressed(vc: self, movieId: cell.movieId, noteLabel: cell.noteLabel)
+        
+        bookmarkTableView.reloadData()
     }
     override func viewDidDisappear(_ animated: Bool) {
        ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: bookmarkTableView)
@@ -150,9 +119,9 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
 }
 extension BookmarkVC: GADBannerViewDelegate {
     func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        print("received ad")
+        print("received ad on bookmarked view")
     }
     func adView(_bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-        print(error)
+        print(" Error receiving add on bookmarked view \(error.localizedDescription)")
     }
 }

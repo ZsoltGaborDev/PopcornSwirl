@@ -15,6 +15,7 @@ protocol LatestMoviesCellDelegate {
     var tableViewDelegate: UITableView! { get set }
     var indexPath: IndexPath! {get set}
     func removeFromWatched(_ cell: LatestMoviesCell)
+    func addedToBookmarkAlert(title: String?, message: String?)
 }
 
 class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
@@ -35,6 +36,8 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     @IBOutlet weak var muteBtn: UIButton!
     @IBOutlet weak var movieViewHeight: NSLayoutConstraint!
     @IBOutlet weak var addToWatchedLabel: UILabel!
+    @IBOutlet weak var containerActivityView: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     
     var videoLayer: AVPlayerLayer = AVPlayerLayer()
@@ -68,7 +71,7 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         primaryGenreName.text = movieBrief.primaryGenreName
         releaseDate.text = DataManager.shared.formatDate(date: movieBrief.releaseDate!)
         releaseDate.layer.cornerRadius = 15
-        self.videoURL = movieBrief.previewUrl        
+        self.videoURL = movieBrief.previewUrl
         if let imageURL = URL(string: movieBrief.artworkUrl60!) {
             MediaService.getImage(imageUrl: imageURL, completion: { (success, imageData) in
                 if success, let imageData = imageData,
@@ -80,7 +83,7 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
                 }
             })
         }
-        movieId = movieBrief.id
+        movieId = movieBrief.trackId
     }
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -90,75 +93,36 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         videoLayer.frame = shotImageView.frame
     }
     func visibleVideoHeight() -> CGFloat {
+        containerActivityView.isHidden = false
+        activityIndicator.startAnimating()
         let videoFrameInParentSuperView: CGRect? = self.superview?.superview?.convert(shotImageView.frame, from: shotImageView)
         guard let videoFrame = videoFrameInParentSuperView,
             let superViewFrame = superview?.frame else {
+                containerActivityView.isHidden = false
+                activityIndicator.startAnimating()
              return 0
         }
         if !superViewFrame.isNull {
             playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
+            containerActivityView.isHidden = true
+            activityIndicator.stopAnimating()
             videoPauseIsOn = false
         }
         let visibleVideoFrame = videoFrame.intersection(superViewFrame)
         return visibleVideoFrame.size.height
     }
     @IBAction func onAddBookmarkBtn(_ sender: Any) {
-        if checkIfBookmarked(id: movieId) {
-            return
-        } else {
-            let list = DataManager.shared.mediaList
-            let bookmarkedMovie = list.filter({$0.id == self.movieId })
-            if let bookmarkedMovieToStore = bookmarkedMovie.first, let user = Auth.auth().currentUser?.email {
-                
-                DataManager.dbShared.collection(K.FirebaseStore.bookmarked).addDocument(data: [
-                K.FirebaseStore.user: user,
-                K.FirebaseStore.dateField: Date().timeIntervalSince1970,
-                K.FirebaseStore.movieBriefId: bookmarkedMovieToStore.id!]) { (error) in
-                    if let e = error {
-                        print("There were issues saving data to firestore, \(e)")
-                    } else {
-                        print("Successfully saved data.")
-                    }
-                }
-            }
-        }
+        DataManager.bookmarkBtnPressed(movieId: movieId, tableView: delegate!.tableViewDelegate)
+        delegate?.addedToBookmarkAlert(title: nil, message: "Movie added to bookmark!")
     }
     @IBAction func onSelectWatchedBtn(_ sender: Any) {
-        if checkIfWatched(id: movieId) {
-            return
-        } else {
-            let list = DataManager.shared.mediaList
-            let watchedMovie = list.filter({$0.id == self.movieId })
-            if let watchedMovieToStore = watchedMovie.first, let user = Auth.auth().currentUser?.email {
-                DataManager.dbShared.collection(K.FirebaseStore.watched).addDocument(data: [
-                K.FirebaseStore.user: user,
-                K.FirebaseStore.dateField: Date().timeIntervalSince1970,
-                K.FirebaseStore.movieBriefId: watchedMovieToStore.id!]) { (error) in
-                    if let e = error {
-                        print("There were issues saving data to firestore, \(e)")
-                    } else {
-                        print("Successfully saved data.")
-                        self.selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                    }
-                }
-            }
-        }
+        DataManager.watchedBtnPressed(movieId: movieId, watchedBtn: selectWatchedBtn, watchedLabel: addToWatchedLabel, tableview: delegate!.tableViewDelegate)
     }
     @IBAction func onRemoveBtn(_ sender: Any) {
         delegate?.removeFromWatched(self)
     }
     @IBAction func onMoreBtn(_ sender: Any) {
-        let list = DataManager.shared.mediaList
-        let movie = list.filter({$0.id == self.movieId })
-        print("\(movie.first!.trackViewUrl!)")
-        guard let url = URL(string: movie.first!.trackViewUrl!) else {
-          return //be safe
-        }
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            UIApplication.shared.openURL(url)
-        }
+        MediaService.moreBtnPressed(movieId: movieId)
     }
     @IBAction func onPlayPauseBtn(_ sender: Any) {
         if videoPauseIsOn {
@@ -193,40 +157,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
                 playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
                 videoPauseIsOn = false
             }
-        }
-    }
-    @discardableResult
-    func checkIfBookmarked(id: Int) -> Bool {
-        let list = DataManager.shared.bookmarkedList
-        let bookmarkedMovie = list.filter({$0.id == id })
-        if let movie = bookmarkedMovie.first {
-            if movie.id == id {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }
-    @discardableResult
-    func checkIfWatched(id: Int) -> Bool {
-        let list = DataManager.shared.watchedList
-        let watchedMovie = list.filter { ($0.id == id)}
-        if let movie = watchedMovie.first {
-            if movie.id == id {
-                self.selectWatchedBtn.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                addToWatchedLabel.text = "WATCHED"
-                return true
-            } else {
-                self.selectWatchedBtn.setImage(UIImage(systemName: "star"), for: .normal)
-                addToWatchedLabel.text = "ADD TO WATCHED"
-                return false
-            }
-        } else {
-           self.selectWatchedBtn.setImage(UIImage(systemName: "star"), for: .normal)
-            addToWatchedLabel.text = "ADD TO WATCHED"
-            return false
         }
     }
 }

@@ -15,13 +15,15 @@ import Firebase
 import GoogleMobileAds
 
 class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, LatestMoviesCellDelegate, GADBannerViewDelegate {
-   
+
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var mainViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var logOutBtn: UIButton!
     @IBOutlet weak var bannerView: GADBannerView!
+    @IBOutlet weak var containerActivityIndicator: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     //Variables
     var tableViewItems = [AnyObject]()
@@ -45,11 +47,13 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        tableView.reloadData()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadData()
         config()
+        DataManager.store()
+        loadData()
         NotificationCenter.default.addObserver(self,
         selector: #selector(self.appEnteredFromBackground),
         name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -57,9 +61,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.navigationBar.removeFromSuperview()
-        //tableView.reloadData()
         pausePlayeVideos()
-        
     }
     func config() {
         logOutBtn.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.left
@@ -77,33 +79,24 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         tableView.estimatedRowHeight = 135
     }
     func loadData() {
-        MediaService.getMovieList(term: K.searchTerm ) { (success, list) in
-            if success, let list = list {
-                let ready = list.sorted(by: { $0.releaseDate!.compare($1.releaseDate!) == .orderedDescending })
-            
-                DataManager.shared.mediaList = ready
-                DispatchQueue.main.async {
-                    self.addMenuItems()
-                    self.addBannerAds()
-                    self.preloadNextAd()
-                    self.tableView.reloadData()
-                }
-            } else {
-                self.presentNoDataAlert(title: "Oops, something happened...",
-            message: "Couldn't load any fun stuff for you:(")
+        FIRFirestoreService.shared.read(from: .movies, returning: MovieBrief.self) { (movies) in
+            DataManager.shared.mediaList.removeAll()
+            DataManager.shared.mediaList = movies
+            print(" Movie nr. in shared media list loadData: \(DataManager.shared.mediaList.count)")
+            DispatchQueue.main.async {
+                self.addMenuItems()
+                self.addBannerAds()
+                self.preloadNextAd()
+                self.tableView.reloadData()
             }
         }
     }
-    func presentNoDataAlert(title: String?, message: String?) {
-        let alertController = UIAlertController(title: title,
-                                                message: message,
-                                                preferredStyle: .alert)
-        
-        let dismissAction = UIAlertAction(title: "Got it", style: .cancel, handler: { (action) -> Void in
+    func addedToBookmarkAlert(title: String?, message: String?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.present(alertController,animated:true,completion:{Timer.scheduledTimer(withTimeInterval: 2, repeats:false, block: {_ in
+            self.dismiss(animated: true, completion: nil)
+            })
         })
-        
-        alertController.addAction(dismissAction)
-        present(alertController, animated: true)
     }
     func tableView(_ tableView: UITableView,
         heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -140,7 +133,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
             let movieBrief = dataSource[indexPath.row]
             cell.configureCell(movieBrief: movieBrief)
             cell.removeBtn.isHidden = true
-            cell.checkIfWatched(id: movieBrief.id)
+            DataManager.checkIfWatched(id: movieBrief.trackId, selectWatchedBtn: cell.selectWatchedBtn, addToWatchedLabel: cell.addToWatchedLabel)
             return cell
         }
     }
@@ -154,7 +147,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     }
     func adView(_ adView: GADBannerView,
         didFailToReceiveAdWithError error: GADRequestError) {
-      print("Failed to receive ad: \(error.localizedDescription)")
+      print("Failed to receive ad on main view: \(error.localizedDescription)")
       // Load the next ad in the adsToLoad list.
       preloadNextAd()
     }
@@ -181,8 +174,6 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     override func viewDidDisappear(_ animated: Bool) {
         ASVideoPlayerController.sharedVideoPlayer.manuallyPausePlayeVideosFor(tableView: tableView)
     }
-    func removeFromWatched(_ cell: LatestMoviesCell) {
-    }
     @IBAction func onLogOutBtn(_ sender: Any) {
         do {
             try Auth.auth().signOut()
@@ -192,6 +183,9 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
         }
+    }
+    func removeFromWatched(_ cell: LatestMoviesCell) {
+        //no need here
     }
 }
 
@@ -207,7 +201,6 @@ extension LatestVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             loadData()
-            tableView.reloadData()
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }

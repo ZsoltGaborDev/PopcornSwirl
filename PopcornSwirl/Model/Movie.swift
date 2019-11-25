@@ -8,8 +8,10 @@
 
 import UIKit
 
-class MovieBrief {
-    var id: Int!
+class MovieBrief: Codable, Identifiable {
+    var documentId: String? = nil
+    
+    var trackId: Int!
     var title: String!
     var trackViewUrl: String?
     var description: String?
@@ -20,9 +22,12 @@ class MovieBrief {
     var releaseDate: String?
     var primaryGenreName: String?
     var artworkUrl60: String?
+    var bookmarked: Bool = false
+    var watched: Bool = false
+    var note: String = ""
     
-    init(id: Int, title: String, trackViewUrl: String, description: String, longDescription: String, previewUrl: String, releaseDate: String, primaryGenreName: String, artworkUrl60: String) {
-        self.id = id
+    init(trackId: Int,title: String, trackViewUrl: String, description: String, longDescription: String, previewUrl: String, releaseDate: String, primaryGenreName: String, artworkUrl60: String) {
+        self.trackId = trackId
         self.title = title
         self.description = description
         self.longDescription = longDescription
@@ -34,7 +39,19 @@ class MovieBrief {
     }
 }
 
-class Movie {
+protocol Identifiable {
+    var documentId: String? { get set }
+}
+class Movie: Codable, Identifiable {
     var user: String!
-    var movie: MovieBrief!
+    var movieId: Int!
+    var documentId: String? = nil
+    var comment: String?
+    
+    init(user: String, movieId: Int, comment: String) {
+        self.user = user
+        self.movieId = movieId
+        self.comment = comment
+        
+    }
 }

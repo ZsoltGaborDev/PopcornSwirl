@@ -16,12 +16,18 @@ struct K {
     static let bookmarkCellNibname = "BookmarkCell"
     static let bookmarkCellReuseId = "bookmarkCell"
     
+    static let watchedCellNibname = "WatchedCell"
+    static let watchedCellReuseId = "watchedCell"
+    
+    
     static let cellNibName = "MessageCell"
     static let registerSegue = "registerToLatest"
     static let loginSegue = "loginToLatest"
     static let cancel = "Cancel"
     static let emailTextFieldPlaceholder = "enter your email"
     static let passwordTextFieldPlaceholder = "password"
+    static let watchedLabel = "WATCHED"
+    static let addToWatchedLabel = "ADD TO WATCHED"
         
     struct Colors {
         static let buttonBlack = UIColor(red:0.12, green:0.13, blue:0.14, alpha:1.0)

@@ -33,4 +33,13 @@ class LoginVC: UIViewController {
             }
         }
     }
+    @IBAction func cancelBtnPressed(_ sender: Any) {
+        navigationController?.popToRootViewController(animated: true)
+    }
+    @IBAction func doneEmail(_ sender: UITextField) {
+        sender.resignFirstResponder()
+    }
+    @IBAction func donePassword(_ sender: UITextField) {
+        sender.resignFirstResponder()
+    }
 }
