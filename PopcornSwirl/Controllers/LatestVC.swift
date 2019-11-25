@@ -132,9 +132,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
         
         return interstitial
     }
-    func interstitialDidReceiveAd(_ ad: GADInterstitial) {
-        print("Interstitial loaded successfully")
-        ad.present(fromRootViewController: self)
+    func interstitialDidReceiveAd(_ ad: GADInterstitial) {        ad.present(fromRootViewController: self)
     }
     func interstitialDidFail(toPresentScreen ad: GADInterstitial) {
         print("Fail to receive interstitial")
@@ -159,7 +157,7 @@ extension LatestVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filteredDataSource = searchText.isEmpty ? dataSource : dataSource.filter({(movies: MovieBrief) -> Bool in
             // If dataItem matches the searchText, return true to include it
-            return movies.primaryGenreName!.range(of: searchText, options: .caseInsensitive) != nil
+            return ((movies.primaryGenreName!.range(of: searchText, options: .caseInsensitive) != nil) || (movies.title!.range(of: searchText, options: .caseInsensitive) != nil))
         })
 
         tableView.reloadData()
@@ -179,21 +177,3 @@ extension Array {
         return indices ~= index ? self[index] : nil
     }
 }
-//extension LatestVC: GADBannerViewDelegate {
-//
-//    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-//        // Reposition the banner ad to create a slide down effect
-//        let translateTransform = CGAffineTransform(translationX: 0, y: -bannerView.bounds.size.height)
-//        bannerView.transform = translateTransform
-//
-//        UIView.animate(withDuration: 0.5) {
-//            self.tableView.tableHeaderView?.frame = bannerView.frame
-//            bannerView.transform = CGAffineTransform.identity
-//            self.tableView.tableHeaderView = bannerView
-//        }
-//    }
-//
-//    func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-//        print("Fail to receive ads \(error.localizedDescription)")
-//    }
-//}
