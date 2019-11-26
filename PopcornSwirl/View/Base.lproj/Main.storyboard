@@ -291,24 +291,6 @@
                                             <constraint firstItem="r6m-uC-vFG" firstAttribute="leading" secondItem="zGl-se-sj9" secondAttribute="leading" constant="16" id="czE-bn-7FJ"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZbF-PL-Fzz">
-                                        <rect key="frame" x="0.0" y="35" width="414" height="641"/>
-                                        <subviews>
-                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Cto-4V-0mj">
-                                                <rect key="frame" x="192" y="305.5" width="30" height="30"/>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="30" id="Y60-XN-Xac"/>
-                                                    <constraint firstAttribute="height" constant="30" id="cjc-sE-P4h"/>
-                                                </constraints>
-                                            </activityIndicatorView>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstItem="Cto-4V-0mj" firstAttribute="centerX" secondItem="ZbF-PL-Fzz" secondAttribute="centerX" id="1Sh-uk-hBJ"/>
-                                            <constraint firstItem="Cto-4V-0mj" firstAttribute="centerY" secondItem="ZbF-PL-Fzz" secondAttribute="centerY" id="Q61-36-87h"/>
-                                        </constraints>
-                                    </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uBn-VA-em7">
                                         <rect key="frame" x="0.0" y="35" width="414" height="641"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -325,28 +307,14 @@
                                             </connections>
                                         </searchBar>
                                     </tableView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QsM-c3-xNg" customClass="GADBannerView">
-                                        <rect key="frame" x="47" y="626" width="320" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="320" id="mxV-Tf-lsm"/>
-                                            <constraint firstAttribute="height" constant="50" id="y5n-fS-QCi"/>
-                                        </constraints>
-                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="ZbF-PL-Fzz" firstAttribute="leading" secondItem="NjH-Kv-rib" secondAttribute="leading" id="5zi-fr-LS3"/>
                                     <constraint firstAttribute="trailing" secondItem="uBn-VA-em7" secondAttribute="trailing" id="6UC-KK-4M4"/>
-                                    <constraint firstItem="ZbF-PL-Fzz" firstAttribute="top" secondItem="zGl-se-sj9" secondAttribute="bottom" id="7Wp-b5-DSr"/>
-                                    <constraint firstAttribute="bottom" secondItem="ZbF-PL-Fzz" secondAttribute="bottom" id="DLC-aO-T0I"/>
                                     <constraint firstItem="zGl-se-sj9" firstAttribute="leading" secondItem="NjH-Kv-rib" secondAttribute="leading" id="ET0-F1-ziH"/>
                                     <constraint firstItem="uBn-VA-em7" firstAttribute="top" secondItem="zGl-se-sj9" secondAttribute="bottom" id="IlA-cU-QMn"/>
-                                    <constraint firstAttribute="bottom" secondItem="QsM-c3-xNg" secondAttribute="bottom" id="QuK-0X-QkO"/>
                                     <constraint firstAttribute="bottom" secondItem="uBn-VA-em7" secondAttribute="bottom" id="UJo-eI-DXJ"/>
                                     <constraint firstItem="zGl-se-sj9" firstAttribute="top" secondItem="NjH-Kv-rib" secondAttribute="top" id="YWI-l5-sbG"/>
-                                    <constraint firstAttribute="trailing" secondItem="ZbF-PL-Fzz" secondAttribute="trailing" id="mVk-8T-Df7"/>
-                                    <constraint firstItem="QsM-c3-xNg" firstAttribute="centerX" secondItem="NjH-Kv-rib" secondAttribute="centerX" id="qJ2-e1-N39"/>
                                     <constraint firstItem="uBn-VA-em7" firstAttribute="leading" secondItem="NjH-Kv-rib" secondAttribute="leading" id="urm-b1-knI"/>
                                     <constraint firstAttribute="trailing" secondItem="zGl-se-sj9" secondAttribute="trailing" id="uz5-fW-xnM"/>
                                 </constraints>
@@ -365,9 +333,6 @@
                     <toolbarItems/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="activityIndicator" destination="Cto-4V-0mj" id="d97-dI-JUc"/>
-                        <outlet property="bannerView" destination="QsM-c3-xNg" id="Ftu-gL-Ey6"/>
-                        <outlet property="containerActivityIndicator" destination="ZbF-PL-Fzz" id="zPT-BB-EHJ"/>
                         <outlet property="logOutBtn" destination="GdU-mW-jFe" id="agd-tO-mkZ"/>
                         <outlet property="mainViewTopConstraint" destination="0yl-bd-2AQ" id="gGY-7F-mRx"/>
                         <outlet property="searchBar" destination="EX9-m2-ifR" id="GIB-f3-tjM"/>

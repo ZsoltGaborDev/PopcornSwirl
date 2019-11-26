@@ -51,25 +51,11 @@
                                             <constraint firstAttribute="height" constant="220" id="mgJ-cf-wjE"/>
                                         </constraints>
                                     </imageView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EXb-SK-DHe">
-                                        <rect key="frame" x="0.0" y="0.0" width="822" height="220"/>
-                                        <subviews>
-                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="3Vb-JA-A2U">
-                                                <rect key="frame" x="394" y="93" width="34" height="34"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="34" id="RA3-Kk-3Io"/>
-                                                    <constraint firstAttribute="height" constant="34" id="s3p-23-0Uo"/>
-                                                </constraints>
-                                            </activityIndicatorView>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstItem="3Vb-JA-A2U" firstAttribute="centerY" secondItem="EXb-SK-DHe" secondAttribute="centerY" id="hdn-Qt-mkF"/>
-                                            <constraint firstItem="3Vb-JA-A2U" firstAttribute="centerX" secondItem="EXb-SK-DHe" secondAttribute="centerX" id="jfZ-Zq-ZU8"/>
-                                        </constraints>
-                                    </view>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="3Vb-JA-A2U">
+                                        <rect key="frame" x="401" y="100" width="20" height="20"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </activityIndicatorView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="S9D-gb-5W2">
                                         <rect key="frame" x="761.5" y="188" width="50.5" height="22"/>
                                         <subviews>
@@ -103,15 +89,13 @@
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="UWA-N3-Y74" firstAttribute="top" secondItem="Ia2-ax-azI" secondAttribute="top" id="2ke-aW-lln"/>
-                                    <constraint firstAttribute="trailing" secondItem="EXb-SK-DHe" secondAttribute="trailing" id="G9R-oD-lid"/>
-                                    <constraint firstAttribute="bottom" secondItem="EXb-SK-DHe" secondAttribute="bottom" id="LQ0-J9-Zo0"/>
                                     <constraint firstAttribute="bottom" secondItem="S9D-gb-5W2" secondAttribute="bottom" constant="10" id="WrO-lv-n42"/>
-                                    <constraint firstItem="EXb-SK-DHe" firstAttribute="leading" secondItem="Ia2-ax-azI" secondAttribute="leading" id="XKx-3Y-ARZ"/>
                                     <constraint firstItem="UWA-N3-Y74" firstAttribute="leading" secondItem="Ia2-ax-azI" secondAttribute="leading" id="XfJ-Lf-ZcA"/>
                                     <constraint firstAttribute="trailing" secondItem="S9D-gb-5W2" secondAttribute="trailing" constant="10" id="buk-o8-yvj"/>
                                     <constraint firstAttribute="trailing" secondItem="UWA-N3-Y74" secondAttribute="trailing" id="ezY-7l-th6"/>
+                                    <constraint firstItem="3Vb-JA-A2U" firstAttribute="centerX" secondItem="Ia2-ax-azI" secondAttribute="centerX" id="jT8-UP-TXI"/>
                                     <constraint firstAttribute="bottom" secondItem="UWA-N3-Y74" secondAttribute="bottom" id="jg2-nX-ZH8"/>
-                                    <constraint firstItem="EXb-SK-DHe" firstAttribute="top" secondItem="Ia2-ax-azI" secondAttribute="top" id="k5M-cj-kkK"/>
+                                    <constraint firstItem="3Vb-JA-A2U" firstAttribute="centerY" secondItem="Ia2-ax-azI" secondAttribute="centerY" id="ySW-iv-rPS"/>
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="LWr-7d-pNi">
@@ -301,7 +285,6 @@
                 <outlet property="addBookmarkBtn" destination="CDd-lm-wkQ" id="rBt-gX-XBT"/>
                 <outlet property="addToWatchedLabel" destination="xZx-Yd-ieV" id="UDE-id-Xw3"/>
                 <outlet property="artworkUrl100" destination="3Oe-uk-XJb" id="mET-CU-Ag0"/>
-                <outlet property="containerActivityView" destination="EXb-SK-DHe" id="9de-NM-2zo"/>
                 <outlet property="moreBtn" destination="2OQ-nb-XjD" id="Upp-Tz-gXU"/>
                 <outlet property="movieDetailLabel" destination="CFf-Nc-6rH" id="SFd-WA-ncB"/>
                 <outlet property="movieTitleLabel" destination="jPP-e2-Qm1" id="O8i-4Y-V15"/>

@@ -18,25 +18,17 @@ class FIRFirestoreService {
     func configure() {
         FirebaseApp.configure()
     }
-    
-    
     private func reference(to collectionReference: FIRCollectionReference) -> CollectionReference {
         return Firestore.firestore().collection(collectionReference.rawValue)
     }
-    
-    
-    
-    
     func create<T: Encodable>(for encodableObject: T, in collectionReference: FIRCollectionReference) {
         do {
             let json = try encodableObject.toJson(excluding: ["documentId"])
             reference(to: collectionReference).addDocument(data: json)
         } catch {
-            print(error)
+            print(error.localizedDescription)
         }
     }
-    
-    
     func read<T: Decodable>(from collectionReference: FIRCollectionReference, returning objectType: T.Type, completion: @escaping([T]) -> Void) {
         
         reference(to: collectionReference).addSnapshotListener { (snapshot, _) in
@@ -51,9 +43,8 @@ class FIRFirestoreService {
                 }
                 completion(objects)
             } catch {
-                print (error)
+                print (error.localizedDescription)
             }
-            
         }
     }
     func update<T: Encodable & Identifiable>(for encodableObject: T, in collectionReference: FIRCollectionReference) {
@@ -64,7 +55,7 @@ class FIRFirestoreService {
             reference(to: collectionReference).document(id).setData(json)
             
         } catch {
-            print(error)
+            print(error.localizedDescription)
         }
     }
     func delete<T: Identifiable>(_ identifiableObject: T, in collectionReference: FIRCollectionReference) {
@@ -74,11 +65,8 @@ class FIRFirestoreService {
             reference(to: collectionReference).document(id).delete()
             
         } catch {
-            print(error)
+            print(error.localizedDescription)
         }
-        
-        
-        
     }
 }
 

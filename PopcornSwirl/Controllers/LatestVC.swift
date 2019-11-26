@@ -22,9 +22,7 @@ class LatestVC: UIViewController, UITableViewDelegate, UITableViewDataSource, La
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var mainViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var logOutBtn: UIButton!
-    @IBOutlet weak var bannerView: GADBannerView!
-    @IBOutlet weak var containerActivityIndicator: UIView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+
     
     //Variables
     var tableViewDelegate: UITableView!

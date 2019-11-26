@@ -36,7 +36,6 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     @IBOutlet weak var muteBtn: UIButton!
     @IBOutlet weak var movieViewHeight: NSLayoutConstraint!
     @IBOutlet weak var addToWatchedLabel: UILabel!
-    @IBOutlet weak var containerActivityView: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     
@@ -66,6 +65,8 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         selectionStyle = .none
     }
     func configureCell(movieBrief: MovieBrief) {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
         movieTitleLabel.text = movieBrief.title
         movieDetailLabel.text = movieBrief.description
         primaryGenreName.text = movieBrief.primaryGenreName
@@ -93,19 +94,17 @@ class LatestMoviesCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         videoLayer.frame = shotImageView.frame
     }
     func visibleVideoHeight() -> CGFloat {
-        containerActivityView.isHidden = false
+        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
         let videoFrameInParentSuperView: CGRect? = self.superview?.superview?.convert(shotImageView.frame, from: shotImageView)
         guard let videoFrame = videoFrameInParentSuperView,
             let superViewFrame = superview?.frame else {
-                containerActivityView.isHidden = false
-                activityIndicator.startAnimating()
              return 0
         }
+        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
         if !superViewFrame.isNull {
             playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
-            containerActivityView.isHidden = true
-            activityIndicator.stopAnimating()
             videoPauseIsOn = false
         }
         let visibleVideoFrame = videoFrame.intersection(superViewFrame)

@@ -40,8 +40,5 @@ class WelcomeVC: UIViewController {
             }
             charIndex += 1
         }
-       
     }
-    
-
 }

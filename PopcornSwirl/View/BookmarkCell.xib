@@ -312,6 +312,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="activityIndicator" destination="6kH-LP-S4d" id="VBT-sq-1Kf"/>
                 <outlet property="addToWatchedLabel" destination="U10-Oy-Ivr" id="J7d-vp-3Ur"/>
                 <outlet property="artworkUrl100" destination="VOY-EA-iMP" id="oLv-8d-uZv"/>
                 <outlet property="commentBtn" destination="oZb-MR-MqN" id="NZb-aS-qpk"/>

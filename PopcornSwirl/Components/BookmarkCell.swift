@@ -41,6 +41,9 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
     var videoControllersHidden = false
     @IBOutlet weak var noteLabel: UILabel!
     @IBOutlet weak var commentBtn: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    
     
     var videoURL: String? {
         didSet {
@@ -67,6 +70,8 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
         movieImageView.isUserInteractionEnabled = true
     }
     func configureCell(movieBrief: MovieBrief) {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
         self.videoURL = movieBrief.previewUrl
         movieTitleLabel.text = movieBrief.title
         movieDetailLabel.text = movieBrief.longDescription
@@ -99,7 +104,11 @@ class BookmarkCell: UITableViewCell, ASAutoPlayVideoLayerContainer {
             let superViewFrame = superview?.frame else {
              return 0
         }
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
         if !superViewFrame.isNull {
+            activityIndicator.stopAnimating()
+            activityIndicator.isHidden = true
             playPauseBtn.setImage(UIImage(systemName: "play"), for: .normal)
             videoPauseIsOn = false
         }
