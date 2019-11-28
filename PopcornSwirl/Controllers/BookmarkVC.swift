@@ -67,6 +67,8 @@ class BookmarkVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         cell.configureCell(movieBrief: movieBrief)
         if movieBrief.note.count > 0 {
             cell.noteLabel.text = movieBrief.note
+        } else {
+            cell.noteLabel.text = "write your note here..."
         }
         DataManager.checkIfWatched(id: movieBrief.trackId, selectWatchedBtn: cell.selectWatchedBtn, addToWatchedLabel: cell.addToWatchedLabel)
         return cell
